@@ -1,52 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Love Calculator</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand&display=swap" rel="stylesheet">
-  <script defer src="script.js"></script>
-</head>
-<body>
-  <div class="container">
-    <h1>💘 Love Calculator</h1>
-    <p>Shared by: <strong id="sharer-name">Anonymous</strong></p>
+document.addEventListener("DOMContentLoaded", function () {
+  const calcBtn = document.getElementById("calcBtn");
+  const name1Input = document.getElementById("name1");
+  const name2Input = document.getElementById("name2");
+  const resultDiv = document.getElementById("result");
+  const heartDiv = document.querySelector(".heart");
+  const tableBody = document.getElementById("history-body");
 
-    <input type="text" id="name1" placeholder="Your name">
-    <input type="text" id="name2" placeholder="Crush's name">
-    <button id="calcBtn">Calculate Love %</button>
+  function getLovePercentage(name1, name2) {
+    let total = (name1 + name2)
+      .toLowerCase()
+      .split("")
+      .reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return (total % 100) + 1;
+  }
 
-    <div class="result" id="result"></div>
-    <div class="heart">❤️</div>
+  calcBtn.addEventListener("click", () => {
+    const name1 = name1Input.value.trim();
+    const name2 = name2Input.value.trim();
 
-    <div class="share-buttons">
-      <button class="share-button" id="shareLinkBtn">Share This App</button>
-    </div>
+    if (!name1 || !name2) {
+      alert("Please enter both names.");
+      return;
+    }
 
-    <table style="margin-top: 30px; width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th>Name 1</th>
-          <th>Name 2</th>
-          <th>%</th>
-          <th>Date<br><small>+ Source</small></th>
-        </tr>
-      </thead>
-      <tbody id="history-body"></tbody>
-    </table>
-  </div>
+    const percent = getLovePercentage(name1, name2);
+    resultDiv.textContent = `Love Compatibility: ${percent}%`;
 
-  <!-- Share Modal -->
-  <div id="shareModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-    <div class="container" style="max-width: 300px; margin: auto; top: 20%; position: relative;">
-      <h2>Generate Share Link</h2>
-      <input type="text" id="sharerInput" placeholder="Enter receiver's name">
-      <button id="generateLinkBtn">Generate Link</button>
-      <p class="message" id="copyMessage"></p>
-    </div>
-  </div>
+    const now = new Date();
+    const dateStr = now.toLocaleString();
 
-  <!-- Love sound -->
-  <audio id="loveSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
-</body>
-</html>
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+      <td>${name1}</td>
+      <td>${name2}</td>
+      <td>${percent}%</td>
+      <td>${dateStr}</td>
+    `;
+    tableBody.appendChild(newRow);
+
+    heartDiv.textContent = "❤️";
+  });
+});
