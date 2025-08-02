@@ -5,18 +5,18 @@ const resultDiv = document.getElementById('result');
 const historyBody = document.getElementById('history-body');
 const sharerNameDisplay = document.getElementById('sharer-name');
 const shareLinkBtn = document.getElementById('shareLinkBtn');
-const copyMsg = document.getElementById('copyMsg');
+const shareModal = document.getElementById('shareModal');
+const sharerInput = document.getElementById('sharerInput');
+const generateLinkBtn = document.getElementById('generateLinkBtn');
 
-// Get sharer name from URL
 function getSharerNameFromURL() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('ref') || "Anonymous";
+  return params.get('ref');
 }
 
-let sharerName = getSharerNameFromURL();
+let sharerName = getSharerNameFromURL() || 'Anonymous';
 sharerNameDisplay.textContent = sharerName;
 
-// Deterministic love calculator
 function calculateLovePercent(name1, name2) {
   const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
   let hash = 0;
@@ -35,16 +35,8 @@ function getLoveMessage(percent) {
   return 'Better luck next time. 💔';
 }
 
-// Escape for security
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-// Save & Load History from localStorage
 function saveEntry(entry) {
-  let history = JSON.parse(localStorage.getItem(sharerName)) || [];
+  const history = JSON.parse(localStorage.getItem(sharerName)) || [];
   history.push(entry);
   localStorage.setItem(sharerName, JSON.stringify(history));
 }
@@ -78,9 +70,12 @@ function displayHistoryEntries() {
   }
 }
 
-displayHistoryEntries();
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
-// On Calculate Button
 calcBtn.addEventListener('click', () => {
   const name1 = name1Input.value.trim();
   const name2 = name2Input.value.trim();
@@ -93,20 +88,39 @@ calcBtn.addEventListener('click', () => {
   const loveMessage = getLoveMessage(lovePercent);
   resultDiv.textContent = `${lovePercent}% - ${loveMessage}`;
 
-  saveEntry({ name1, name2, lovePercent, date: new Date().toLocaleString() });
+  saveEntry({
+    name1,
+    name2,
+    lovePercent,
+    date: new Date().toLocaleString()
+  });
+
   displayHistoryEntries();
 });
 
-// Share App Link
 shareLinkBtn.addEventListener('click', () => {
-  const senderName = name1Input.value.trim() || "Anonymous";
-  const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(senderName)}`;
-  navigator.clipboard.writeText(url).then(() => {
-    copyMsg.style.display = 'block';
-    setTimeout(() => {
-      copyMsg.style.display = 'none';
-    }, 3000);
-  }).catch(() => {
-    alert("Could not copy link automatically. Please copy it manually.");
+  shareModal.style.display = 'block';
+  sharerInput.value = '';
+  sharerInput.focus();
+});
+
+generateLinkBtn.addEventListener('click', () => {
+  const sender = sharerInput.value.trim();
+  if (!sender) {
+    alert("Please enter your name.");
+    return;
+  }
+  const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(sender)}`;
+  navigator.clipboard.writeText(shareUrl).then(() => {
+    alert("Link copied to clipboard!");
+    shareModal.style.display = 'none';
   });
 });
+
+window.onclick = (e) => {
+  if (e.target == shareModal) {
+    shareModal.style.display = 'none';
+  }
+};
+
+displayHistoryEntries();
