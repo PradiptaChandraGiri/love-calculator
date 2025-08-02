@@ -1,39 +1,50 @@
+/* Basic body layout */
 body {
   font-family: 'Quicksand', sans-serif;
   background: linear-gradient(to bottom right, #ff9a9e, #fad0c4);
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  padding: 20px;
+  transition: background 0.5s ease;
 }
 
+/* Main container */
 .container {
   background: white;
   padding: 40px;
   border-radius: 25px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 90%;
-  max-width: 450px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
+/* Heading */
 h1 {
   font-family: 'Pacifico', cursive;
   font-size: 36px;
   color: #e91e63;
+  margin-bottom: 20px;
+  transition: color 0.5s ease;
 }
 
-input {
+/* Input boxes */
+input[type="text"] {
   width: 90%;
   padding: 12px;
   margin: 10px 0;
   border: 2px solid #e91e63;
   border-radius: 12px;
   font-size: 16px;
+  transition: all 0.3s ease;
 }
 
+/* Buttons */
 button {
   background-color: #e91e63;
   color: white;
@@ -43,29 +54,39 @@ button {
   border-radius: 12px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #c2185b;
 }
 
+/* Result text */
 .result {
   margin-top: 20px;
   font-size: 20px;
   color: #d81b60;
+  transition: color 0.5s ease;
 }
 
+/* Heart animation (optional) */
 .heart {
   font-size: 40px;
   animation: heartbeat 1.2s infinite;
   margin-top: 10px;
+  transition: color 0.5s ease;
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.3); }
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
 }
 
+/* Share section */
 .share-buttons {
   margin-top: 25px;
   display: flex;
@@ -75,9 +96,17 @@ button:hover {
 
 .share-button {
   background-color: #e91e63;
+  border: none;
   padding: 10px 18px;
   border-radius: 12px;
+  color: white;
   font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.share-button:hover {
+  background-color: #c2185b;
 }
 
 .message {
@@ -88,36 +117,115 @@ button:hover {
   min-height: 1.4em;
 }
 
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+  text-align: center;
+}
+
+th {
+  background-color: #f8bbd0;
+  color: #880e4f;
+}
+
+/* Footer info */
+.container p {
+  font-size: 13px;
+  color: #777;
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+/* Modal styling */
 .modal {
   position: fixed;
-  z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .modal-content {
-  background: white;
+  background-color: white;
+  margin: 15% auto;
   padding: 20px;
-  border-radius: 15px;
-  width: 80%;
+  border-radius: 12px;
+  width: 90%;
   max-width: 350px;
-  margin: 20% auto;
   text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
-.footer {
-  text-align: center;
-  margin: 40px auto 20px;
-  font-size: 14px;
-  color: #555;
+.modal-content input {
+  width: 90%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 2px solid #e91e63;
+  border-radius: 8px;
 }
 
-.footer a {
-  color: #e91e63;
-  text-decoration: none;
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 25px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  input, button {
+    font-size: 14px;
+  }
+
+  table th, table td {
+    font-size: 12px;
+    padding: 6px;
+  }
 }
 
-.footer a:hover {
-  text-decoration: underline;
+/* Optional Dark Mode (if toggled in future) */
+body.dark-mode {
+  background: linear-gradient(to bottom right, #1e1e2f, #121222);
+}
+
+body.dark-mode .container {
+  background: #2c2c3e;
+  color: #eee;
+}
+
+body.dark-mode h1 {
+  color: #ff80ab;
+}
+
+body.dark-mode input {
+  background: #3a3a4e;
+  color: #eee;
+  border-color: #ff80ab;
+}
+
+body.dark-mode .result,
+body.dark-mode .message,
+body.dark-mode .heart {
+  color: #ff80ab;
+}
+
+body.dark-mode .share-button {
+  background-color: #ff80ab;
+  color: #2c2c3e;
+}
+
+body.dark-mode .share-button:hover {
+  background-color: #e040fb;
 }
