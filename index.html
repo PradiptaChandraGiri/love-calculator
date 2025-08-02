@@ -8,25 +8,24 @@
 <body>
   <div class="container">
     <h1>Love Calculator</h1>
-    
+
     <input type="text" id="name1" placeholder="Your Name">
     <input type="text" id="name2" placeholder="Crush's Name">
     <button id="calcBtn">Calculate Love %</button>
-    
+
     <div class="result" id="result"></div>
 
     <div class="share-buttons">
       <button id="shareLinkBtn" class="share-button">Share This App</button>
     </div>
-
     <div class="message" id="copyMessage"></div>
 
-    <h3 style="margin-top: 30px;">History (Private)</h3>
+    <h3 style="margin-top: 30px;">Your Private History</h3>
     <table style="width: 100%; margin-top: 10px;">
       <thead>
         <tr>
           <th>Your Name</th>
-          <th>Crush Name</th>
+          <th>Crush</th>
           <th>Love %</th>
           <th>Date</th>
         </tr>
@@ -40,12 +39,12 @@
     </p>
   </div>
 
-  <!-- Share Modal -->
+  <!-- Modal for sharing -->
   <div id="shareModal" class="modal">
     <div class="modal-content">
-      <p>Enter your name to share this app:</p>
+      <p>Enter your name to generate your private link:</p>
       <input type="text" id="sharerInput" placeholder="Your name...">
-      <button id="generateLinkBtn">Generate Link</button>
+      <button id="generateLinkBtn">Generate & Copy</button>
     </div>
   </div>
 
