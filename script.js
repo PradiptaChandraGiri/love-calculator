@@ -1,43 +1,56 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const calcBtn = document.getElementById("calcBtn");
-  const name1Input = document.getElementById("name1");
-  const name2Input = document.getElementById("name2");
-  const resultDiv = document.getElementById("result");
-  const heartDiv = document.querySelector(".heart");
-  const tableBody = document.getElementById("history-body");
+const name1Input = document.getElementById("name1");
+const name2Input = document.getElementById("name2");
+const resultText = document.getElementById("resultText");
+const calculateBtn = document.querySelector(".calculateBtn");
+const shareBtn = document.querySelector(".shareBtn");
+const historyTable = document.querySelector("#historyTable tbody");
 
-  function getLovePercentage(name1, name2) {
-    let total = (name1 + name2)
-      .toLowerCase()
-      .split("")
-      .reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    return (total % 100) + 1;
+// Display "Shared by" from URL if available
+const urlParams = new URLSearchParams(window.location.search);
+const refName = urlParams.get("ref");
+if (refName) {
+  document.getElementById("sharedBy").textContent = decodeURIComponent(refName);
+}
+
+calculateBtn.addEventListener("click", () => {
+  const name1 = name1Input.value.trim();
+  const name2 = name2Input.value.trim();
+
+  if (!name1 || !name2) {
+    alert("Please enter both names!");
+    return;
   }
 
-  calcBtn.addEventListener("click", () => {
-    const name1 = name1Input.value.trim();
-    const name2 = name2Input.value.trim();
+  // Simple love percentage generator
+  const lovePercentage = Math.floor(Math.random() * 101);
 
-    if (!name1 || !name2) {
-      alert("Please enter both names.");
-      return;
-    }
+  resultText.textContent = `Love Compatibility: ${lovePercentage}%`;
 
-    const percent = getLovePercentage(name1, name2);
-    resultDiv.textContent = `Love Compatibility: ${percent}%`;
+  const now = new Date();
+  const formattedDate = `${now.toLocaleDateString()}, ${now.toLocaleTimeString()}`;
 
-    const now = new Date();
-    const dateStr = now.toLocaleString();
+  const newRow = historyTable.insertRow();
+  newRow.insertCell(0).textContent = name1;
+  newRow.insertCell(1).textContent = name2;
+  newRow.insertCell(2).textContent = `${lovePercentage}%`;
+  newRow.insertCell(3).textContent = formattedDate;
+});
 
-    const newRow = document.createElement("tr");
-    newRow.innerHTML = `
-      <td>${name1}</td>
-      <td>${name2}</td>
-      <td>${percent}%</td>
-      <td>${dateStr}</td>
-    `;
-    tableBody.appendChild(newRow);
+// Share Button Logic
+shareBtn.addEventListener("click", () => {
+  const sender = name1Input.value.trim() || "Anonymous";
+  const url = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(sender)}`;
 
-    heartDiv.textContent = "❤️";
-  });
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      const msg = document.getElementById("copyMsg");
+      msg.style.display = "block";
+      setTimeout(() => {
+        msg.style.display = "none";
+      }, 3000);
+    })
+    .catch((err) => {
+      console.error("Copy failed:", err);
+      alert("Failed to copy the link.");
+    });
 });
