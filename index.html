@@ -8,130 +8,131 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
+      padding: 2rem;
     }
     h1 {
-      color: #e91e63;
-      font-size: 28px;
-      margin-bottom: 20px;
+      font-size: 2.5rem;
+      color: #e60073;
     }
     input {
-      padding: 10px;
-      width: 90%;
-      margin-bottom: 10px;
-      border: 2px solid #f48fb1;
+      padding: 0.5rem;
+      margin: 0.5rem;
       border-radius: 10px;
-      font-size: 16px;
+      border: none;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
     }
     button {
-      background-color: #e91e63;
+      padding: 0.7rem 2rem;
+      margin-top: 1rem;
+      background-color: #ff4d88;
       color: white;
-      padding: 10px 20px;
       border: none;
-      font-size: 16px;
-      border-radius: 12px;
+      border-radius: 20px;
+      font-size: 1rem;
       cursor: pointer;
     }
     button:hover {
-      background-color: #c2185b;
+      background-color: #e60073;
     }
     #result {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #4a148c;
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      text-align: center;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    .gift {
-      font-size: 24px;
-      margin-top: 15px;
+    #links {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    #links a {
+      display: block;
+      margin: 0.3rem;
+      color: #e60073;
+      font-weight: bold;
+      text-decoration: none;
     }
     footer {
-      margin-top: 40px;
+      margin-top: 3rem;
       text-align: center;
-      font-size: 14px;
-      color: #555;
+      font-size: 0.9rem;
+      color: #333;
     }
     footer a {
-      color: #0077b5;
+      color: #333;
       text-decoration: none;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>💕 Love Calculator 💕</h1>
-    <input type="text" id="yourName" placeholder="Your Name" />
-    <input type="text" id="crushName" placeholder="Crush Name" />
-    <button onclick="calculateLove()">Calculate</button>
-    <div id="result"></div>
-  </div>
+  <h1>💖 Love Calculator 💖</h1>
+  <input type="text" id="yourName" placeholder="Your Name" />
+  <input type="text" id="crushName" placeholder="Crush's Name" />
+  <button onclick="calculateLove()">Calculate</button>
+
+  <div id="result"></div>
+  <div id="links"></div>
 
   <footer>
-    Created by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank"><strong>Pradipta Chandra Giri</strong></a><br>
-    © 2025 All Rights Reserved.
+    Created with ❤️ by 
+    <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
+      Pradipta Chandra Giri
+    </a><br/>
+    © 2025 All Rights Reserved
   </footer>
 
   <script>
     function calculateLove() {
       const yourName = document.getElementById("yourName").value.trim();
       const crushName = document.getElementById("crushName").value.trim();
-      const resultEl = document.getElementById("result");
+      const resultDiv = document.getElementById("result");
+      const linksDiv = document.getElementById("links");
 
       if (!yourName || !crushName) {
-        resultEl.innerHTML = "Please enter both names 💔";
+        resultDiv.innerHTML = "Please enter both names!";
+        linksDiv.innerHTML = "";
         return;
       }
 
-      let percentage;
+      let lovePercent;
+      const key = `${yourName.toLowerCase()}-${crushName.toLowerCase()}`;
+      const storedResult = localStorage.getItem(key);
 
-      const isSpecial = yourName.toLowerCase() === "pradipta" &&
-                        crushName.toLowerCase().includes("bishnupriya");
-
-      if (isSpecial) {
-        percentage = 90 + Math.floor(Math.random() * 10); // between 90-99
+      if (storedResult) {
+        lovePercent = parseInt(storedResult.split("|")[0]);
       } else {
-        // Deterministic based on character codes
-        const seed = [...yourName + crushName]
-          .map(c => c.charCodeAt(0))
-          .reduce((a, b) => a + b, 0);
-        percentage = 50 + (seed % 51); // 50–100
+        if (yourName.toLowerCase().includes("pradipta") &&
+            crushName.toLowerCase().includes("bishnupriya")) {
+          lovePercent = 90 + Math.floor(Math.random() * 10); // 90-99%
+        } else {
+          lovePercent = Math.floor(Math.random() * 101); // 0-100%
+        }
+
+        const timestamp = new Date().toLocaleString();
+        localStorage.setItem(key, `${lovePercent}|${timestamp}`);
       }
 
-      // Save to localStorage
-      const loveRecord = {
-        yourName,
-        crushName,
-        percentage,
-        date: new Date().toLocaleString()
-      };
+      resultDiv.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br/>Love is <strong>${lovePercent}%</strong>`;
 
-      let loveHistory = JSON.parse(localStorage.getItem("loveResults") || "[]");
-      loveHistory.push(loveRecord);
-      localStorage.setItem("loveResults", JSON.stringify(loveHistory));
-
-      // Display result
-      resultEl.innerHTML = `💞 ${yourName} ❤️ ${crushName} = ${percentage}%`;
-
-      if (isSpecial) {
-        resultEl.innerHTML += `
-          <div class="gift">🎁 A special gift just for Bishnupriya! 💝</div>
-          <div>You're truly made for each other ✨</div>
-        `;
+      if (yourName.toLowerCase().includes("pradipta") &&
+          crushName.toLowerCase().includes("bishnupriya")) {
+        resultDiv.innerHTML += `<br/><em>💌 Special Message: You're meant to be! Here's a virtual rose 🌹</em>`;
       }
+
+      const encodedRef = encodeURIComponent(yourName);
+      linksDiv.innerHTML = `
+        🔗 <a href="?ref=${encodedRef}">Share Your Link</a>
+        📊 <a href="dashboard.html?ref=${encodedRef}">Go to Your Private Dashboard</a>
+      `;
     }
   </script>
 </body>
