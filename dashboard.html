@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Dashboard - Pradipta 💖</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #ff4e50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    main {
+      padding: 1.5rem;
+    }
+    .record {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .record strong {
+      color: #e91e63;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #f06292;
+      color: white;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💖 Love Dashboard</h1>
+    <p>Private Results for <strong>Pradipta</strong></p>
+  </header>
+
+  <main id="dashboard"></main>
+
+  <footer>
+    Made with 💘 by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
+    &copy; 2025 Pradipta Chandra Giri. All rights reserved.
+  </footer>
+
+  <script>
+    // Load and show dashboard entries for Pradipta only
+    const dashboardContainer = document.getElementById('dashboard');
+    const storedResults = JSON.parse(localStorage.getItem("loveResults")) || [];
+
+    const filteredResults = storedResults.filter(result => 
+      result.refName && result.refName.toLowerCase() === "pradipta"
+    );
+
+    if (filteredResults.length === 0) {
+      dashboardContainer.innerHTML = "<p>No results found for you yet.</p>";
+    } else {
+      filteredResults.reverse().forEach(({ userName, crushName, lovePercent, timestamp }) => {
+        const entry = document.createElement("div");
+        entry.classList.add("record");
+        entry.innerHTML = `
+          <p><strong>${userName}</strong> ❤️ <strong>${crushName}</strong></p>
+          <p>Love Percentage: <strong>${lovePercent}%</strong></p>
+          <p><small>${timestamp}</small></p>
+        `;
+        dashboardContainer.appendChild(entry);
+      });
+    }
+  </script>
+</body>
+</html>
