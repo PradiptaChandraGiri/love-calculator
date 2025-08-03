@@ -112,6 +112,8 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       animation: fadeIn 0.5s ease-out;
       display: none; /* Initially hidden */
+      overflow-y: auto;
+      max-height: 70vh;
     }
 
     .log-item {
@@ -120,11 +122,16 @@
     }
 
     footer {
-      margin-top: auto;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       font-size: 0.9rem;
-      padding-top: 2rem;
+      padding: 1rem 0;
       color: #777;
       text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 10;
     }
 
     footer a {
@@ -200,12 +207,13 @@
 
     /* Heart Animation */
     .heart {
-      position: absolute;
+      position: fixed;
       bottom: -50px;
       font-size: 20px;
       animation: float linear forwards;
       opacity: 0.7;
-      z-index: -1; /* Ensure hearts stay behind content */
+      z-index: -1;
+      will-change: transform; /* Optimize animation */
     }
 
     @keyframes float {
@@ -217,6 +225,29 @@
         transform: translateY(-100vh);
         opacity: 0;
       }
+    }
+
+    /* Scrollbar Styling */
+    .dashboard::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .dashboard::-webkit-scrollbar-track {
+      background: rgba(255, 206, 218, 0.2);
+      border-radius: 10px;
+    }
+    
+    .dashboard::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    .dashboard::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+
+    .dashboard-content {
+      padding-right: 10px;
     }
 
     /* Responsive Design */
@@ -244,6 +275,7 @@
   <button class="toggle-button" id="toggleDarkMode">🌙</button>
 
   <h1>💘 Love Match Calculator</h1>
+  <div id="hearts-container"></div>
 
   <form id="loveForm">
     <input type="text" id="yourName" placeholder="Your Name" required>
@@ -332,13 +364,18 @@
       };
 
       if (ref) {
-        // Update existing entries to add this share reference
-        loveLogs.forEach(log => {
-          if (log.owner === localStorage.getItem("ownerName") && 
-              !log.sharedWith.includes(ref)) {
-            log.sharedWith.push(ref);
-          }
-        });
+        // For shared links, only show this result
+        resultBox.innerHTML += `<p style="color:gray;">✅ This result has been shared with you.</p>`;
+      } else {
+        // For owners, show dashboard link
+        localStorage.setItem("ownerName", yourName);
+        const baseUrl = window.location.origin + window.location.pathname;
+        resultBox.innerHTML += `
+          <div style='margin-top:20px;'>
+            <div>🔗 Share result: <strong>${baseUrl}?ref=${encodeURIComponent(yourName)}</strong></div>
+            <div>📊 <a href="${baseUrl}?dashboard=${encodeURIComponent(yourName)}">View your private dashboard</a></div>
+          </div>
+        `;
       }
       loveLogs.push(entry);
       localStorage.setItem('loveLogs', JSON.stringify(loveLogs));
@@ -395,13 +432,23 @@
     }
 
     function showDashboard(name) {
-      const filtered = loveLogs.filter(log => log.owner === name || (log.sharedWith && log.sharedWith.includes(name)));
-      if (filtered.length === 0) return;
-      dashboardBox.style.display = 'block';
-      dashboardBox.innerHTML = `<h3>🔒 Private Dashboard for <em>${name}</em></h3><br>`;
-      filtered.reverse().forEach(log => {
-        dashboardBox.innerHTML += `<div class="log-item">${log.date}: <strong>${log.name1}</strong> ❤️ <strong>${log.name2}</strong> = <strong>${log.loveScore}%</strong></div>`;
-      });
+      const filtered = loveLogs.filter(log => log.owner === name);
+      if (filtered.length === 0) {
+        dashboardBox.innerHTML = `<p>No saved love calculations yet.</p>`;
+      } else {
+        dashboardBox.style.display = 'block';
+        dashboardBox.innerHTML = `
+          <h3>🔒 Love History for ${name}</h3>
+          <div style="text-align:center; margin:10px 0;">
+            <a href="?" style="color:#ff6b81; text-decoration:none;">← Back to calculator</a>
+          </div>
+          <div class="dashboard-content">
+        `;
+        filtered.reverse().forEach(log => {
+          dashboardBox.innerHTML += `<div class="log-item">${log.date}: <strong>${log.name1}</strong> ❤️ <strong>${log.name2}</strong> = <strong>${log.loveScore}%</strong></div>`;
+        });
+        dashboardBox.innerHTML += `</div></div>`;
+      }
     }
 
     if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
