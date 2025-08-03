@@ -94,6 +94,10 @@
     <div class="credits">Developed by Pradipta Chandra Giri</div>
 
     <script>
+        const queryParams = new URLSearchParams(window.location.search);
+        const refName = queryParams.get("ref");
+        const dashboardName = queryParams.get("dashboard");
+
         function createHeart(x, y) {
             const heart = document.createElement("div");
             heart.className = "heart-burst";
@@ -115,23 +119,27 @@
                 return;
             }
 
-            const score = Math.floor(Math.random() * 51) + 50;
+            const score = Math.floor(Math.random() * 41) + 60; // 60-100%
             resultDiv.innerHTML = `💑 ${name1} & ${name2} have ${score}% Love!`;
 
-            // Trigger heart burst
             const rect = resultDiv.getBoundingClientRect();
             createHeart(rect.left + rect.width / 2, rect.top);
 
-            // Save to localStorage with timestamp
-            const oldData = JSON.parse(localStorage.getItem("loveLogs") || "[]");
-            oldData.push({
-                name1,
-                name2,
-                loveScore: score,
-                date: new Date().toLocaleString(),
-                owner: name1
-            });
-            localStorage.setItem("loveLogs", JSON.stringify(oldData));
+            const today = new Date().toISOString().split("T")[0];
+            const owner = refName || localStorage.getItem("ownerName") || name1;
+
+            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
+            logs.push({ owner, name1, name2, loveScore: score, date: today });
+            localStorage.setItem("loveLogs", JSON.stringify(logs));
+
+            if (refName) {
+                resultDiv.innerHTML += "<br>Saved privately.";
+            } else {
+                localStorage.setItem("ownerName", name1);
+                const baseUrl = window.location.origin + window.location.pathname;
+                resultDiv.innerHTML += `<div style='margin-top:10px;'>🔗 Share this link with your crush:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong></div>`;
+                resultDiv.innerHTML += `<div>📊 View your private dashboard here:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong></div>`;
+            }
         }
     </script>
 </body>
