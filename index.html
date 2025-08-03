@@ -4,162 +4,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Calculator</title>
+    <title>💘 Love Calculator 💘</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #ffe6e6;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom right, #ffe6e6, #ffd6e8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             padding: 20px;
         }
 
         h1 {
+            font-family: 'Pacifico', cursive;
             color: #ff3366;
+            margin-bottom: 20px;
+            font-size: 3rem;
+            text-shadow: 1px 1px 3px #ccc;
         }
 
-        input {
-            padding: 10px;
-            margin: 10px;
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
             border: 2px solid #ff99aa;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 1rem;
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #ff3366;
-            color: white;
+            background: #ff3366;
+            color: #fff;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
         }
 
-        #dashboard,
-        #result,
-        #shareableLink,
-        #dashboardLink {
+        button:hover {
+            background: #ff0055;
+        }
+
+        .result {
             margin-top: 20px;
+            font-size: 1.2rem;
+            color: #333;
         }
 
-        table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 90%;
-            max-width: 600px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 10px;
+        footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #666;
         }
     </style>
 </head>
 
 <body>
     <h1>💘 Love Calculator 💘</h1>
-    <div id="inputSection">
-        <input type="text" id="name1" placeholder="Your Name">
-        <input type="text" id="name2" placeholder="Crush's Name">
-        <br>
+    <div class="container">
+        <input type="text" id="yourName" placeholder="Your Name" required>
+        <input type="text" id="crushName" placeholder="Crush's Name" required>
         <button onclick="calculateLove()">Calculate Love %</button>
+        <div class="result" id="result"></div>
     </div>
-
-    <div id="result"></div>
-    <div id="shareableLink"></div>
-    <div id="dashboardLink"></div>
-
-    <div id="dashboard" style="display: none;">
-        <h2>Your Love Dashboard 💖</h2>
-        <input type="text" id="nameFilter" placeholder="Filter by Name">
-        <input type="date" id="dateFilter">
-        <table>
-            <thead>
-                <tr>
-                    <th>Your Name</th>
-                    <th>Crush's Name</th>
-                    <th>Love %</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody id="logBody"></tbody>
-        </table>
-    </div>
+    <footer>
+        &copy; 2025 <a href="https://pradiptachandragiri.github.io" target="_blank">Pradipta Chandra Giri</a>. All rights reserved.
+    </footer>
 
     <script>
-        const queryParams = new URLSearchParams(window.location.search);
-        const refName = queryParams.get("ref");
-        const dashboardName = queryParams.get("dashboard");
-
-        const inputSection = document.getElementById("inputSection");
-        const resultDiv = document.getElementById("result");
-        const dashboard = document.getElementById("dashboard");
-        const logBody = document.getElementById("logBody");
-
-        inputSection.style.display = "block";
-
         function calculateLove() {
-            const name1 = document.getElementById("name1").value.trim();
-            const name2 = document.getElementById("name2").value.trim();
+            const yourName = document.getElementById('yourName').value.trim();
+            const crushName = document.getElementById('crushName').value.trim();
 
-            if (!name1 || !name2) {
-                alert("Please enter both names!");
+            if (!yourName || !crushName) {
+                alert('Please enter both names!');
                 return;
             }
 
-            const loveScore = Math.floor(Math.random() * 41) + 60; // 60-100%
-            const today = new Date().toISOString().split("T")[0];
-            resultDiv.innerText = `${name1} ❤️ ${name2} = ${loveScore}%`;
+            const percentage = Math.floor(Math.random() * 51) + 50; // Random between 50% to 100%
+            const resultText = `${yourName} ❤️ ${crushName} = ${percentage}% Love Compatibility!`;
+            document.getElementById('result').textContent = resultText;
 
-            const owner = refName || localStorage.getItem("ownerName") || name1;
-            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
-            logs.push({ owner, name1, name2, loveScore, date: today });
-            localStorage.setItem("loveLogs", JSON.stringify(logs));
-
-            if (refName) {
-                resultDiv.innerText += "\nSaved privately.";
-            } else {
-                localStorage.setItem("ownerName", name1);
-                const baseUrl = window.location.origin + window.location.pathname;
-                document.getElementById("shareableLink").innerHTML =
-                    `🔗 Share this link with your crush:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong>`;
-                document.getElementById("dashboardLink").innerHTML =
-                    `📊 View your private dashboard here:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong>`;
-            }
+            saveResult(yourName, crushName, percentage);
         }
 
-        function renderLogs(logs) {
-            logBody.innerHTML = "";
-            logs.forEach(log => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${log.name1}</td>
-                    <td>${log.name2}</td>
-                    <td>${log.loveScore}%</td>
-                    <td>${log.date}</td>
-                `;
-                logBody.appendChild(row);
-            });
-        }
-
-        if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
-            dashboard.style.display = "block";
-            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]")
-                .filter(log => log.owner === dashboardName);
-            renderLogs(logs);
-
-            document.getElementById("nameFilter").addEventListener("input", function () {
-                const filterVal = this.value.toLowerCase();
-                const filtered = logs.filter(log => log.name1.toLowerCase().includes(filterVal));
-                renderLogs(filtered);
-            });
-
-            document.getElementById("dateFilter").addEventListener("change", function () {
-                const dateVal = this.value;
-                const filtered = logs.filter(log => log.date === dateVal);
-                renderLogs(filtered);
-            });
+        function saveResult(yourName, crushName, percentage) {
+            const ref = new URLSearchParams(window.location.search).get("ref") || "default";
+            const entry = {
+                yourName,
+                crushName,
+                percentage,
+                timestamp: new Date().toLocaleString()
+            };
+            const key = `loveCalc_${ref}`;
+            const data = JSON.parse(localStorage.getItem(key)) || [];
+            data.push(entry);
+            localStorage.setItem(key, JSON.stringify(data));
         }
     </script>
 </body>
