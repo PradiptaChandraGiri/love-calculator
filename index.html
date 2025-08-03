@@ -1,161 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Love Calculator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Calculator – Pradipta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #ff6b81;
+      --bg: #fff0f5;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-dark: #2d2d2d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #ffe6eb, #ffd6f0);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       padding: 2rem;
-      background: #fce4ec;
-      color: #333;
     }
+
     h1 {
-      color: #e91e63;
-      text-align: center;
+      font-family: 'Playfair Display', serif;
+      color: var(--primary);
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      animation: fadeInDown 1s ease-out;
     }
+
     form {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 1rem;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.2rem;
-    }
-    button {
-      margin-top: 1.5rem;
-      width: 100%;
-      padding: 0.7rem;
-      background-color: #e91e63;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .links {
-      margin-top: 2rem;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
       max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      animation: fadeInUp 1s ease-out;
     }
-    .links p {
-      margin: 0.5rem 0;
+
+    input, button {
+      padding: 0.8rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
     }
-    .result {
+
+    input {
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .result, .dashboard {
+      margin-top: 2rem;
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .log-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    footer {
+      margin-top: auto;
+      font-size: 0.9rem;
+      padding-top: 2rem;
+      color: #777;
       text-align: center;
-      font-size: 1.2rem;
-      margin-top: 1rem;
-      color: green;
+    }
+
+    footer a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
 
-  <h1>❤️ Love Calculator ❤️</h1>
+<body>
+  <h1>💘 Love Match Calculator</h1>
 
   <form id="loveForm">
-    <label for="yourName">Your Name</label>
-    <input type="text" id="yourName" required />
-
-    <label for="crushName">Crush's Name</label>
-    <input type="text" id="crushName" required />
-
-    <button type="submit">Calculate</button>
+    <input type="text" id="yourName" placeholder="Your Name" required>
+    <input type="text" id="crushName" placeholder="Crush Name" required>
+    <button type="submit">Calculate Love %</button>
   </form>
 
-  <div class="result" id="result"></div>
+  <div class="result" id="resultBox" style="display:none;"></div>
 
-  <div class="links" id="links" style="display: none;">
-    <p>🔗 <strong>Share this link:</strong><br>
-    <a href="#" id="shareLink" target="_blank"></a></p>
-    
-    <p>📊 <strong>Your Dashboard:</strong><br>
-    <a href="#" id="dashboardLink" target="_blank"></a></p>
-  </div>
+  <div class="dashboard" id="dashboardBox" style="display:none;"></div>
+
+  <footer>
+    <p>
+      Made with ❤️ by 
+      <strong>
+        <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
+          Pradipta Chandra Giri
+        </a>
+      </strong><br>
+      <small>&copy; 2025 Pradipta Chandra Giri. All rights reserved.</small>
+    </p>
+  </footer>
 
   <script>
-    const form = document.getElementById("loveForm");
-    const resultDiv = document.getElementById("result");
-    const linksDiv = document.getElementById("links");
-    const shareLinkEl = document.getElementById("shareLink");
-    const dashboardLinkEl = document.getElementById("dashboardLink");
+    const loveForm = document.getElementById('loveForm');
+    const resultBox = document.getElementById('resultBox');
+    const dashboardBox = document.getElementById('dashboardBox');
 
-    function getRandomPercentage() {
-      return Math.floor(Math.random() * 51) + 50; // Random 50-100%
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    const dashboardName = urlParams.get('dashboard');
 
-    function getCurrentTimestamp() {
-      const now = new Date();
-      return now.toLocaleString();
-    }
+    const loveLogs = JSON.parse(localStorage.getItem('loveLogs') || '[]');
 
-    form.addEventListener("submit", function(e) {
+    loveForm.addEventListener('submit', function (e) {
       e.preventDefault();
-
-      const yourName = document.getElementById("yourName").value.trim();
-      const crushName = document.getElementById("crushName").value.trim();
+      const yourName = document.getElementById('yourName').value.trim();
+      const crushName = document.getElementById('crushName').value.trim();
 
       if (!yourName || !crushName) {
-        alert("Please fill both fields.");
+        alert("Please enter both names!");
         return;
       }
 
-      const percentage = getRandomPercentage();
-      const timestamp = getCurrentTimestamp();
+      const key = yourName.toLowerCase() + '_' + crushName.toLowerCase();
+      let lovePercent;
+      let message = "";
+
+      if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
+        lovePercent = Math.floor(90 + Math.random() * 10);
+        message = "💖 Special connection detected! A gift is on your way, Bishnupriya 💝";
+      } else {
+        const seed = yourName.length + crushName.length + key.length;
+        lovePercent = ((seed * 17) % 100);
+        if (lovePercent < 10) lovePercent += 10;
+        message = lovePercent > 75 ? "❤️ A strong bond!" : lovePercent > 50 ? "💗 Good match!" : "💔 Needs more love!";
+      }
+
+      const date = new Date().toISOString().split("T")[0];
 
       const entry = {
-        yourName,
-        crushName,
-        percentage,
-        timestamp
+        owner: ref || localStorage.getItem("ownerName") || yourName,
+        name1: yourName,
+        name2: crushName,
+        loveScore: lovePercent,
+        date: date
       };
 
-      const ref = yourName.toLowerCase().replace(/\s+/g, '');
-      const storageKey = "loveResults";
-      const existing = JSON.parse(localStorage.getItem(storageKey)) || [];
+      loveLogs.push(entry);
+      localStorage.setItem('loveLogs', JSON.stringify(loveLogs));
 
-      existing.push({ ...entry, ref });
-      localStorage.setItem(storageKey, JSON.stringify(existing));
+      resultBox.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br><br><h2>${lovePercent}% Love Match</h2><p>${message}</p><p style="margin-top:1rem;font-size:0.9rem;color:#999;">Saved on ${date}</p>`;
 
-      resultDiv.innerText = `Love Score between ${yourName} ❤️ ${crushName} is ${percentage}%`;
+      if (ref) {
+        resultBox.innerHTML += `<p style="color:gray;">✅ Love Stays On Fully On The trust.</p>`;
+      } else {
+        localStorage.setItem("ownerName", yourName);
+        const baseUrl = window.location.origin + window.location.pathname;
+        resultBox.innerHTML += `<div style='margin-top:10px;'>🔗 Share this link:<br><strong>${baseUrl}?ref=${encodeURIComponent(yourName)}</strong></div>`;
+        resultBox.innerHTML += `<div>📊 View your private dashboard:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(yourName)}</strong></div>`;
+      }
 
-      const basePath = `${window.location.origin}${window.location.pathname.replace(/[^\/]*$/, '')}`;
-      const shareLink = `${basePath}index.html?ref=${ref}`;
-      const dashboardLink = `${basePath}dashboard.html?ref=${ref}`;
-
-      shareLinkEl.href = shareLink;
-      shareLinkEl.innerText = shareLink;
-
-      dashboardLinkEl.href = dashboardLink;
-      dashboardLinkEl.innerText = dashboardLink;
-
-      linksDiv.style.display = "block";
+      resultBox.style.display = 'block';
     });
 
-    // Auto-fill ref name if coming via share link
-    window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const ref = urlParams.get('ref');
-      if (ref) {
-        document.getElementById('yourName').value = ref;
-      }
-    };
-  </script>
+    function showDashboard(name) {
+      const filtered = loveLogs.filter(log => log.owner === name);
+      if (filtered.length === 0) return;
+      dashboardBox.style.display = 'block';
+      dashboardBox.innerHTML = `<h3>🔒 Private Dashboard for <em>${name}</em></h3><br>`;
+      filtered.reverse().forEach(log => {
+        dashboardBox.innerHTML += `<div class="log-item">${log.date}: <strong>${log.name1}</strong> ❤️ <strong>${log.name2}</strong> = <strong>${log.loveScore}%</strong></div>`;
+      });
+    }
 
+    if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
+      showDashboard(dashboardName);
+    } else if (ref) {
+      showDashboard(ref);
+    }
+  </script>
 </body>
+
 </html>
