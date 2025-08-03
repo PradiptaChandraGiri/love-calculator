@@ -146,6 +146,23 @@
 
     const loveLogs = JSON.parse(localStorage.getItem('loveLogs') || '[]');
 
+    function calculateLovePercentage(name1, name2) {
+      const combined = (name1 + name2).toLowerCase().replace(/\s+/g, '');
+      let hash = 0;
+      for (let i = 0; i < combined.length; i++) {
+        hash = combined.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash;
+      }
+      return Math.abs(hash % 101);
+    }
+
+    function loveMessage(percent) {
+      if (percent >= 90) return "Perfect Soulmates 💞";
+      if (percent >= 75) return "A strong connection 💘";
+      if (percent >= 50) return "There's potential 💖";
+      return "Needs more spark ✨";
+    }
+
     loveForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const yourName = document.getElementById('yourName').value.trim();
@@ -156,7 +173,7 @@
         return;
       }
 
-      const lovePercent = Math.floor(Math.random() * 41) + 60;
+      const lovePercent = calculateLovePercentage(yourName, crushName);
       const date = new Date().toISOString().split("T")[0];
 
       const entry = {
@@ -170,7 +187,7 @@
       loveLogs.push(entry);
       localStorage.setItem('loveLogs', JSON.stringify(loveLogs));
 
-      resultBox.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br><br><h2>${lovePercent}% Love Match</h2><p style="margin-top:1rem;font-size:0.9rem;color:#999;">Saved on ${date}</p>`;
+      resultBox.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br><br><h2>${lovePercent}% Love Match</h2><p>${loveMessage(lovePercent)}</p><p style="margin-top:1rem;font-size:0.9rem;color:#999;">Saved on ${date}</p>`;
       if (ref) {
         resultBox.innerHTML += `<p style="color:gray;">✅ Love Stays On Fully On The trust.</p>`;
       } else {
