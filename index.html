@@ -168,7 +168,11 @@
       if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
         lovePercent = Math.floor(90 + Math.random() * 10);
         message = "💖 Special connection detected! A gift is on your way, Bishnupriya 💝";
-      } else {
+      } 
+      else if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
+        lovePercent = Math.floor(90 + Math.random() * 10);
+        message = "💖 Special connection detected! A gift is on your way, Bishnupriya 💝";
+      }else {
         const seed = yourName.length + crushName.length + key.length;
         lovePercent = ((seed * 17) % 100);
         if (lovePercent < 10) lovePercent += 10;
@@ -221,3 +225,4 @@
 </body>
 
 </html>
+
