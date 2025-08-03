@@ -2,120 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Love Calculator Dashboard 💘</title>
+  <title>Private Love Dashboard</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
-      padding: 2rem;
+      background: linear-gradient(to right, #ffdde1, #ee9ca7);
       color: #333;
-    }
-    h1 {
+      margin: 0;
+      padding: 20px;
       text-align: center;
-      color: #c6009d;
     }
+
+    h1 {
+      color: #c0392b;
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    #refName {
+      font-weight: bold;
+      color: #8e44ad;
+    }
+
     table {
-      width: 100%;
-      max-width: 700px;
-      margin: auto;
+      margin: 20px auto;
       border-collapse: collapse;
-      margin-top: 2rem;
-      background: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 800px;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
       border-radius: 10px;
       overflow: hidden;
     }
+
     th, td {
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #eee;
-      text-align: center;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
     }
+
     th {
       background-color: #f06292;
       color: white;
     }
-    tr:last-child td {
-      border-bottom: none;
+
+    tr:hover {
+      background-color: #fce4ec;
     }
+
     .no-data {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 1.2rem;
-      color: #444;
+      color: #555;
+      font-style: italic;
+      margin-top: 20px;
     }
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 0.9rem;
+
+    .footer {
+      margin-top: 50px;
+      font-size: 14px;
+      color: #666;
     }
-    footer a {
+
+    a {
+      color: #8e44ad;
       text-decoration: none;
-      color: #333;
-      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>💘 Private Love Dashboard 💘</h1>
-  <div id="dashboardContent" class="no-data">Loading your data...</div>
+  <h1>❤️ Private Dashboard for <span id="refName"></span></h1>
+  <div id="resultTable"></div>
 
-  <footer>
-    Created by 
-    <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
-      Pradipta Chandra Giri
-    </a> | © 2025
-  </footer>
+  <div class="footer">
+    Made with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
+    © 2025 Pradipta Chandra Giri. All rights reserved.
+  </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const refName = params.get("ref")?.toLowerCase();
+    function getQueryParam(key) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(key);
+    }
 
-    const contentDiv = document.getElementById("dashboardContent");
+    const ref = getQueryParam('ref');
+    document.getElementById("refName").textContent = ref ? ref : "Unknown";
 
-    if (!refName) {
-      contentDiv.innerHTML = "⚠️ Invalid access. Use your personalized dashboard link.";
-    } else {
-      let results = [];
+    const container = document.getElementById("resultTable");
 
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const [yourName, crushName] = key.split("-");
-        const value = localStorage.getItem(key);
-        
-        if (yourName && yourName.toLowerCase() === refName && value) {
-          const [percent, time] = value.split("|");
-          results.push({ yourName, crushName, percent, time });
-        }
-      }
+    if (ref) {
+      const storedData = JSON.parse(localStorage.getItem("loveResults")) || [];
+      const filtered = storedData.filter(entry => entry.ref === ref);
 
-      if (results.length === 0) {
-        contentDiv.innerHTML = `🙁 No love results found for <strong>${refName}</strong>.`;
-      } else {
-        let tableHTML = `
+      if (filtered.length > 0) {
+        let html = `
           <table>
-            <tr>
-              <th>Your Name</th>
-              <th>Crush Name</th>
-              <th>Love %</th>
-              <th>Timestamp</th>
-            </tr>
+            <thead>
+              <tr>
+                <th>Your Name</th>
+                <th>Crush's Name</th>
+                <th>Love %</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
         `;
 
-        results.forEach(entry => {
-          tableHTML += `
+        filtered.forEach(entry => {
+          html += `
             <tr>
-              <td>${entry.yourName}</td>
-              <td>${entry.crushName}</td>
-              <td>${entry.percent}%</td>
-              <td>${entry.time}</td>
+              <td>${entry.name}</td>
+              <td>${entry.crush}</td>
+              <td>${entry.percentage}%</td>
+              <td>${entry.message}</td>
+              <td>${new Date(entry.timestamp).toLocaleString()}</td>
             </tr>
           `;
         });
 
-        tableHTML += `</table>`;
-        contentDiv.innerHTML = tableHTML;
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      } else {
+        container.innerHTML = `<div class="no-data">No entries found for "${ref}".</div>`;
       }
+    } else {
+      container.innerHTML = `<div class="no-data">Invalid or missing dashboard reference (ref).</div>`;
     }
   </script>
 </body>
