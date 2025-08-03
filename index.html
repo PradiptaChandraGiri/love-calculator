@@ -4,76 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Love Calculator 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to bottom right, #ffe6e6, #ffb3cc);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
             color: #333;
             text-align: center;
             padding: 40px 10px;
-            animation: fadeIn 1s ease;
+            overflow-x: hidden;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #cc0052;
-            text-shadow: 1px 1px 1px #fff;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            color: #c0392b;
+            margin-bottom: 30px;
         }
 
         input {
-            padding: 12px;
-            width: 250px;
-            margin: 8px;
-            border-radius: 10px;
+            padding: 14px;
+            width: 280px;
+            margin: 10px;
+            border-radius: 12px;
             border: 1px solid #ccc;
             outline: none;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.3);
         }
 
         button {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            background-color: #ff4d88;
+            background-color: #e74c3c;
             color: white;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #ff4d88;
+        button::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0);
+            border-radius: 50%;
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        button:active::after {
+            transform: scale(2);
+            opacity: 1;
         }
 
         #result {
             margin-top: 30px;
-            font-size: 24px;
-            color: #ff0066;
+            font-size: 26px;
+            color: #c0392b;
             font-weight: bold;
-            animation: beat 0.6s infinite alternate;
+            min-height: 60px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
         }
 
-        @keyframes beat {
-            from { transform: scale(1); }
-            to { transform: scale(1.08); }
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
         }
 
-        .heart-burst {
+        .heart {
             position: absolute;
-            color: #ff4d88;
-            font-size: 30px;
-            animation: burst 1s ease forwards;
+            color: rgba(255, 105, 135, 0.2);
+            font-size: 22px;
+            animation: floatUp 10s infinite ease-in;
         }
 
-        @keyframes burst {
-            0% { transform: scale(0.5); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.8); }
+            100% { transform: translateY(-10vh) scale(1.2); }
         }
 
         .credits {
@@ -82,24 +117,26 @@
             color: #555;
         }
 
-        .heart-float {
-            position: fixed;
-            animation: floatUp 2s ease-out forwards;
-            pointer-events: none;
+        .loading-dots::after {
+            content: ".";
+            animation: dots 1.5s steps(3, end) infinite;
         }
 
-        @keyframes floatUp {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-150px); }
+        @keyframes dots {
+            0% { content: "."; }
+            33% { content: ".."; }
+            66% { content: "..."; }
         }
     </style>
 </head>
 <body>
+    <div class="floating-hearts"></div>
+
     <h1>💕 Love Calculator 💕</h1>
     <input type="text" id="yourName" placeholder="Your Name">
     <input type="text" id="crushName" placeholder="Crush's Name">
     <br>
-    <button onclick="calculateLove(event)">Calculate Love 💘</button>
+    <button onclick="calculateLove()">Calculate Love 💘</button>
     <div id="result"></div>
 
     <div class="credits">Developed by Pradipta Chandra Giri</div>
@@ -109,61 +146,79 @@
         const refName = queryParams.get("ref");
         const dashboardName = queryParams.get("dashboard");
 
-        function createHeart(x, y) {
-            const heart = document.createElement("div");
-            heart.className = "heart-burst";
-            heart.innerText = "💖";
-            heart.style.left = x + "px";
-            heart.style.top = y + "px";
-            heart.style.position = "absolute";
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 1000);
-        }
-
         function floatHearts() {
-            const heart = document.createElement("div");
-            heart.className = "heart-float";
-            heart.innerText = "💗";
-            heart.style.left = Math.random() * window.innerWidth + "px";
-            heart.style.bottom = "0px";
-            heart.style.fontSize = Math.random() * 20 + 20 + "px";
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 2000);
+            const container = document.querySelector('.floating-hearts');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerText = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (8 + Math.random() * 5) + 's';
+                heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+                container.appendChild(heart);
+            }
         }
 
-        setInterval(floatHearts, 800);
+        floatHearts();
 
-        function calculateLove(event) {
+        function animateCount(finalValue, callback) {
+            let value = 0;
+            const duration = 1500;
+            const stepTime = 30;
+            const steps = Math.floor(duration / stepTime);
+            const increment = finalValue / steps;
+            const resultDiv = document.getElementById("result");
+
+            const interval = setInterval(() => {
+                value += increment;
+                resultDiv.innerHTML = `❤️ Calculating: ${Math.round(value)}%`;
+                if (value >= finalValue) {
+                    clearInterval(interval);
+                    callback();
+                }
+            }, stepTime);
+        }
+
+        function calculateLove() {
             const name1 = document.getElementById("yourName").value.trim();
             const name2 = document.getElementById("crushName").value.trim();
             const resultDiv = document.getElementById("result");
 
             if (!name1 || !name2) {
                 resultDiv.textContent = "Please enter both names ❤️";
+                resultDiv.classList.add('visible');
                 return;
             }
 
+            resultDiv.classList.remove('visible');
+            resultDiv.innerHTML = "❤️ Calculating";
+            resultDiv.classList.add("loading-dots");
+
             const score = Math.floor(Math.random() * 41) + 60; // 60-100%
-            resultDiv.innerHTML = `💑 ${name1} & ${name2} have ${score}% Love!`;
 
-            const rect = resultDiv.getBoundingClientRect();
-            createHeart(rect.left + rect.width / 2, rect.top);
+            setTimeout(() => {
+                resultDiv.classList.remove("loading-dots");
+                animateCount(score, () => {
+                    resultDiv.innerHTML = `💑 ${name1} & ${name2} have <strong>${score}%</strong> Love!`;
 
-            const today = new Date().toISOString().split("T")[0];
-            const owner = refName || localStorage.getItem("ownerName") || name1;
+                    const today = new Date().toISOString().split("T")[0];
+                    const owner = refName || localStorage.getItem("ownerName") || name1;
 
-            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
-            logs.push({ owner, name1, name2, loveScore: score, date: today });
-            localStorage.setItem("loveLogs", JSON.stringify(logs));
+                    const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
+                    logs.push({ owner, name1, name2, loveScore: score, date: today });
+                    localStorage.setItem("loveLogs", JSON.stringify(logs));
 
-            if (refName) {
-                resultDiv.innerHTML += "<br>Saved privately.";
-            } else {
-                localStorage.setItem("ownerName", name1);
-                const baseUrl = window.location.origin + window.location.pathname;
-                resultDiv.innerHTML += `<div style='margin-top:10px;'>🔗 Share this link with your crush:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong></div>`;
-                resultDiv.innerHTML += `<div>📊 View your private dashboard here:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong></div>`;
-            }
+                    if (refName) {
+                        resultDiv.innerHTML += "<br><small style='color:gray;'>✅ Saved privately.</small>";
+                    } else {
+                        localStorage.setItem("ownerName", name1);
+                        const baseUrl = window.location.origin + window.location.pathname;
+                        resultDiv.innerHTML += `<div style='margin-top:10px;'>🔗 Share this link:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong></div>`;
+                        resultDiv.innerHTML += `<div>📊 View your private dashboard:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong></div>`;
+                    }
+                    resultDiv.classList.add('visible');
+                });
+            }, 1000);
         }
     </script>
 </body>
