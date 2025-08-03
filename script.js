@@ -15,7 +15,7 @@ const sharerName = params.get('ref') || 'Anonymous';
 const localUser = localStorage.getItem('localUser');
 const isOwner = localUser === sharerName;
 
-// Consistent formula
+// Love % calculation
 function calculateLovePercent(name1, name2) {
   const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
   let hash = 0;
@@ -40,16 +40,19 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Save entry to storage
 function saveEntry(entry) {
   let history = JSON.parse(localStorage.getItem(sharerName)) || [];
   history.push(entry);
   localStorage.setItem(sharerName, JSON.stringify(history));
 }
 
+// Load from storage
 function loadHistory() {
   return JSON.parse(localStorage.getItem(sharerName)) || [];
 }
 
+// Display only receiver entries
 function displayHistoryEntries() {
   const history = loadHistory();
   historyBody.innerHTML = '';
@@ -61,18 +64,19 @@ function displayHistoryEntries() {
     return;
   }
 
-  if (history.length === 0) {
+  const sharedEntries = history.filter(entry => entry.from === 'receiver');
+
+  if (sharedEntries.length === 0) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" style="text-align:center;">No entries yet.</td>`;
+    tr.innerHTML = `<td colspan="4" style="text-align:center;">No shared entries yet.</td>`;
     historyBody.appendChild(tr);
     return;
   }
 
-  for (const entry of history) {
-    const label = entry.from === 'self' ? '' : ' 👤 (from shared link)';
+  for (const entry of sharedEntries) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${escapeHtml(entry.name1)}${label}</td>
+      <td>${escapeHtml(entry.name1)} 👤</td>
       <td>${escapeHtml(entry.name2)}</td>
       <td>${entry.lovePercent}%</td>
       <td>${escapeHtml(entry.date)}</td>
@@ -81,6 +85,7 @@ function displayHistoryEntries() {
   }
 }
 
+// Fallback copy support
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).catch(() => {
     const textarea = document.createElement('textarea');
@@ -96,6 +101,7 @@ function copyToClipboard(text) {
   });
 }
 
+// Calculate button click
 calcBtn.addEventListener('click', () => {
   if (!sharerName) {
     alert("Invalid sharer.");
@@ -125,6 +131,7 @@ calcBtn.addEventListener('click', () => {
   displayHistoryEntries();
 });
 
+// Share modal open
 shareLinkBtn.addEventListener('click', () => {
   shareModal.style.display = 'block';
   sharerInput.value = '';
@@ -132,6 +139,7 @@ shareLinkBtn.addEventListener('click', () => {
   sharerInput.focus();
 });
 
+// Generate sharable link
 generateLinkBtn.addEventListener('click', () => {
   const sender = sharerInput.value.trim();
   if (!sender) {
@@ -146,16 +154,17 @@ generateLinkBtn.addEventListener('click', () => {
   alert("Link copied! Share it with friends.");
 });
 
+// Modal close on background click
 window.onclick = function (event) {
   if (event.target == shareModal) {
     shareModal.style.display = "none";
   }
 };
 
-// Display "Shared by" message for receiver
+// Show "shared by" if receiver
 if (!isOwner) {
   sharedMsg.textContent = `💌 This love calculator was shared with you by ${sharerName}`;
 }
 
-// Initial load
+// Load dashboard on start
 displayHistoryEntries();
