@@ -1,3 +1,5 @@
+// script.js (Final + UI Filters for Name & Date)
+
 const name1Input = document.getElementById('name1');
 const name2Input = document.getElementById('name2');
 const calcBtn = document.getElementById('calcBtn');
@@ -9,13 +11,14 @@ const sharerInput = document.getElementById('sharerInput');
 const generateLinkBtn = document.getElementById('generateLinkBtn');
 const copyMessage = document.getElementById('copyMessage');
 const sharedMsg = document.getElementById('sharedByMsg');
+const filterNameInput = document.getElementById('filterName');
+const filterDateInput = document.getElementById('filterDate');
 
 const params = new URLSearchParams(window.location.search);
 const sharerName = params.get('ref') || 'Anonymous';
 const localUser = localStorage.getItem('localUser');
 const isOwner = localUser === sharerName;
 
-// Love % calculation
 function calculateLovePercent(name1, name2) {
   const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
   let hash = 0;
@@ -40,19 +43,16 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// Save entry to storage
 function saveEntry(entry) {
   let history = JSON.parse(localStorage.getItem(sharerName)) || [];
   history.push(entry);
   localStorage.setItem(sharerName, JSON.stringify(history));
 }
 
-// Load from storage
 function loadHistory() {
   return JSON.parse(localStorage.getItem(sharerName)) || [];
 }
 
-// Display only receiver entries
 function displayHistoryEntries() {
   const history = loadHistory();
   historyBody.innerHTML = '';
@@ -66,14 +66,23 @@ function displayHistoryEntries() {
 
   const sharedEntries = history.filter(entry => entry.from === 'receiver');
 
-  if (sharedEntries.length === 0) {
+  const filterName = filterNameInput.value.trim().toLowerCase();
+  const filterDate = filterDateInput.value;
+
+  const filtered = sharedEntries.filter(entry => {
+    const matchName = !filterName || entry.name1.toLowerCase().includes(filterName) || entry.name2.toLowerCase().includes(filterName);
+    const matchDate = !filterDate || entry.date.startsWith(filterDate);
+    return matchName && matchDate;
+  });
+
+  if (filtered.length === 0) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" style="text-align:center;">No shared entries yet.</td>`;
+    tr.innerHTML = `<td colspan="4" style="text-align:center;">No matching results found.</td>`;
     historyBody.appendChild(tr);
     return;
   }
 
-  for (const entry of sharedEntries) {
+  for (const entry of filtered) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${escapeHtml(entry.name1)} 👤</td>
@@ -85,7 +94,6 @@ function displayHistoryEntries() {
   }
 }
 
-// Fallback copy support
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).catch(() => {
     const textarea = document.createElement('textarea');
@@ -101,7 +109,6 @@ function copyToClipboard(text) {
   });
 }
 
-// Calculate button click
 calcBtn.addEventListener('click', () => {
   if (!sharerName) {
     alert("Invalid sharer.");
@@ -131,7 +138,6 @@ calcBtn.addEventListener('click', () => {
   displayHistoryEntries();
 });
 
-// Share modal open
 shareLinkBtn.addEventListener('click', () => {
   shareModal.style.display = 'block';
   sharerInput.value = '';
@@ -139,7 +145,6 @@ shareLinkBtn.addEventListener('click', () => {
   sharerInput.focus();
 });
 
-// Generate sharable link
 generateLinkBtn.addEventListener('click', () => {
   const sender = sharerInput.value.trim();
   if (!sender) {
@@ -154,17 +159,17 @@ generateLinkBtn.addEventListener('click', () => {
   alert("Link copied! Share it with friends.");
 });
 
-// Modal close on background click
 window.onclick = function (event) {
   if (event.target == shareModal) {
     shareModal.style.display = "none";
   }
 };
 
-// Show "shared by" if receiver
 if (!isOwner) {
   sharedMsg.textContent = `💌 This love calculator was shared with you by ${sharerName}`;
 }
 
-// Load dashboard on start
+filterNameInput.addEventListener('input', displayHistoryEntries);
+filterDateInput.addEventListener('change', displayHistoryEntries);
+
 displayHistoryEntries();
