@@ -1,168 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Love Calculator ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #ffe6e6;
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #ffafbd, #ffc3a0);
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
       text-align: center;
     }
+
     h1 {
-      color: #e60073;
-      font-size: 2.5rem;
-      margin-top: 40px;
+      font-family: 'Pacifico', cursive;
+      font-size: 3em;
+      color: #ff4b69;
+      margin-bottom: 20px;
     }
-    .container {
-      max-width: 500px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
+
     input[type="text"] {
+      padding: 10px;
+      margin: 10px;
       width: 80%;
-      padding: 12px;
-      margin: 10px 0;
+      font-size: 1em;
       border-radius: 10px;
       border: 1px solid #ccc;
-      font-size: 1rem;
     }
+
     button {
-      background-color: #ff4d88;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #ff4b69;
       color: white;
-      padding: 12px 20px;
       border: none;
       border-radius: 10px;
-      font-size: 1rem;
       cursor: pointer;
-      margin-top: 10px;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background-color: #e60073;
+      background-color: #ff1f4b;
     }
+
     .result {
-      font-size: 1.5rem;
-      margin-top: 20px;
-      color: #cc0066;
+      font-size: 1.5em;
+      margin: 20px 0;
+      color: #ff0066;
     }
-    .dashboard {
-      margin-top: 60px;
-      background: #fff;
-      padding: 20px;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
+
+    .link-box {
+      margin-top: 20px;
+      background: #ffe6ec;
+      padding: 15px;
       border-radius: 10px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
     }
+
     th, td {
-      padding: 12px;
-      border: 1px solid #eee;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
     }
+
     th {
-      background: #ffccdd;
+      background-color: #ffc3a0;
     }
-    input[type="date"] {
-      padding: 5px;
+
+    .filters input {
+      margin: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .credit {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #555;
     }
   </style>
 </head>
-<body>
-  <h1>💘 Love Calculator 💘</h1>
-  <div class="container">
-    <input type="text" id="yourName" placeholder="Your Name" />
-    <input type="text" id="crushName" placeholder="Crush's Name" />
-    <br />
-    <button onclick="calculateLove()">Calculate Love %</button>
-    <div class="result" id="result"></div>
-  </div>
 
-  <div class="dashboard" id="dashboardSection" style="display:none;">
-    <h2>🔐 Private Dashboard</h2>
-    <input type="text" id="filterName" placeholder="Search by name" oninput="renderDashboard()" />
-    <input type="date" id="filterDate" onchange="renderDashboard()" />
-    <br><br>
-    <table>
-      <thead>
-        <tr>
-          <th>Your Name</th>
-          <th>Crush</th>
-          <th>Love %</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="dashboardTable"></tbody>
-    </table>
+<body>
+  <div class="container">
+    <h1>💖 Love Calculator 💖</h1>
+
+    <div id="inputSection">
+      <input type="text" id="name1" placeholder="Your Name">
+      <input type="text" id="name2" placeholder="Crush's Name">
+      <br>
+      <button onclick="calculateLove()">Calculate Love 💘</button>
+      <div class="result" id="result"></div>
+      <div class="link-box">
+        <div id="shareableLink"></div>
+        <div id="dashboardLink"></div>
+      </div>
+    </div>
+
+    <div id="dashboard" style="display:none">
+      <h2>📊 Your Dashboard</h2>
+      <div class="filters">
+        <input type="text" id="nameFilter" placeholder="Search by Name">
+        <input type="date" id="dateFilter">
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Your Name</th>
+            <th>Crush's Name</th>
+            <th>Love %</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+
+    <div class="credit">
+      Made with ❤️ by Pradipta Chandra Giri
+    </div>
   </div>
 
   <script>
-    const refName = new URLSearchParams(window.location.search).get('ref');
-    if (refName) document.getElementById('dashboardSection').style.display = 'block';
+    const queryParams = new URLSearchParams(window.location.search);
+    const refName = queryParams.get("ref");
+    const dashboardName = queryParams.get("dashboard");
+
+    const inputSection = document.getElementById("inputSection");
+    const resultDiv = document.getElementById("result");
+    const dashboard = document.getElementById("dashboard");
+    const logBody = document.getElementById("logBody");
+
+    inputSection.style.display = "block";
 
     function calculateLove() {
-      const yourName = document.getElementById('yourName').value.trim();
-      const crushName = document.getElementById('crushName').value.trim();
+      const name1 = document.getElementById("name1").value.trim();
+      const name2 = document.getElementById("name2").value.trim();
 
-      if (!yourName || !crushName) {
+      if (!name1 || !name2) {
         alert("Please enter both names!");
         return;
       }
 
-      const lovePercent = Math.floor(Math.random() * 51) + 50;
-      const resultText = `${yourName} ❤️ ${crushName} = ${lovePercent}% love`;
-      document.getElementById('result').innerText = resultText;
+      const loveScore = Math.floor(Math.random() * 41) + 60; // 60-100%
+      const today = new Date().toISOString().split("T")[0];
+      resultDiv.innerText = `${name1} ❤️ ${name2} = ${loveScore}%`;
 
-      const entry = {
-        yourName,
-        crushName,
-        lovePercent,
-        timestamp: new Date().toISOString()
-      };
+      const owner = refName || localStorage.getItem("ownerName") || name1;
+      const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
+      logs.push({ owner, name1, name2, loveScore, date: today });
+      localStorage.setItem("loveLogs", JSON.stringify(logs));
 
-      const allResults = JSON.parse(localStorage.getItem('loveResults') || '[]');
-      allResults.push(entry);
-      localStorage.setItem('loveResults', JSON.stringify(allResults));
-    }
-
-    function renderDashboard() {
-      const allResults = JSON.parse(localStorage.getItem('loveResults') || '[]');
-      const tableBody = document.getElementById('dashboardTable');
-      const filterName = document.getElementById('filterName').value.toLowerCase();
-      const filterDate = document.getElementById('filterDate').value;
-
-      let filtered = allResults;
       if (refName) {
-        filtered = filtered.filter(e => e.yourName.toLowerCase() === refName.toLowerCase());
+        resultDiv.innerText += "\nSaved privately.";
+      } else {
+        localStorage.setItem("ownerName", name1);
+        const baseUrl = window.location.origin + window.location.pathname;
+        document.getElementById("shareableLink").innerHTML =
+          `🔗 Share this link with your crush:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong>`;
+        document.getElementById("dashboardLink").innerHTML =
+          `📊 View your private dashboard here:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong>`;
       }
-      if (filterName) {
-        filtered = filtered.filter(e => e.yourName.toLowerCase().includes(filterName));
-      }
-      if (filterDate) {
-        filtered = filtered.filter(e => e.timestamp.startsWith(filterDate));
-      }
-
-      tableBody.innerHTML = filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .map(entry => `
-          <tr>
-            <td>${entry.yourName}</td>
-            <td>${entry.crushName}</td>
-            <td>${entry.lovePercent}%</td>
-            <td>${new Date(entry.timestamp).toLocaleString()}</td>
-          </tr>`).join('');
     }
 
-    if (refName) {
-      renderDashboard();
+    function renderLogs(logs) {
+      logBody.innerHTML = "";
+      logs.forEach(log => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${log.name1}</td>
+          <td>${log.name2}</td>
+          <td>${log.loveScore}%</td>
+          <td>${log.date}</td>
+        `;
+        logBody.appendChild(row);
+      });
+    }
+
+    if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
+      dashboard.style.display = "block";
+      const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]")
+        .filter(log => log.owner === dashboardName);
+
+      renderLogs(logs);
+
+      document.getElementById("nameFilter").addEventListener("input", function () {
+        const filterVal = this.value.toLowerCase();
+        const filtered = logs.filter(log => log.name1.toLowerCase().includes(filterVal));
+        renderLogs(filtered);
+      });
+
+      document.getElementById("dateFilter").addEventListener("change", function () {
+        const dateVal = this.value;
+        const filtered = logs.filter(log => log.date === dateVal);
+        renderLogs(filtered);
+      });
     }
   </script>
 </body>
+
 </html>
