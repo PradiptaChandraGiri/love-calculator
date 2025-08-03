@@ -81,6 +81,17 @@
             font-size: 14px;
             color: #555;
         }
+
+        .heart-float {
+            position: fixed;
+            animation: floatUp 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-150px); }
+        }
     </style>
 </head>
 <body>
@@ -88,7 +99,7 @@
     <input type="text" id="yourName" placeholder="Your Name">
     <input type="text" id="crushName" placeholder="Crush's Name">
     <br>
-    <button onclick="calculateLove()">Calculate Love 💘</button>
+    <button onclick="calculateLove(event)">Calculate Love 💘</button>
     <div id="result"></div>
 
     <div class="credits">Developed by Pradipta Chandra Giri</div>
@@ -109,7 +120,20 @@
             setTimeout(() => heart.remove(), 1000);
         }
 
-        function calculateLove() {
+        function floatHearts() {
+            const heart = document.createElement("div");
+            heart.className = "heart-float";
+            heart.innerText = "💗";
+            heart.style.left = Math.random() * window.innerWidth + "px";
+            heart.style.bottom = "0px";
+            heart.style.fontSize = Math.random() * 20 + 20 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
+
+        setInterval(floatHearts, 800);
+
+        function calculateLove(event) {
             const name1 = document.getElementById("yourName").value.trim();
             const name2 = document.getElementById("crushName").value.trim();
             const resultDiv = document.getElementById("result");
