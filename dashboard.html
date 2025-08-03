@@ -1,90 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Love Dashboard - Pradipta 💖</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Calculator - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ffecd2, #fcb69f);
-      color: #333;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #ffe0ec, #f9f4ff);
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
     }
-    header {
-      background: #ff4e50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
+
     h1 {
-      margin: 0;
-      font-size: 2rem;
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      color: #d6336c;
+      margin: 30px 0 10px;
     }
-    main {
-      padding: 1.5rem;
-    }
-    .record {
+
+    .dashboard {
+      width: 90%;
+      max-width: 600px;
       background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
-    .record strong {
-      color: #e91e63;
+
+    .entry {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
     }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #f06292;
-      color: white;
+
+    .entry:last-child {
+      border-bottom: none;
+    }
+
+    .entry strong {
+      color: #d6336c;
+    }
+
+    .credits {
+      margin-top: 30px;
       font-size: 0.9rem;
-      margin-top: 2rem;
+      text-align: center;
+      color: #888;
     }
-    a {
-      color: white;
+
+    .credits a {
+      color: #d6336c;
+      text-decoration: none;
+    }
+
+    .credits a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>💖 Love Dashboard</h1>
-    <p>Private Results for <strong>Pradipta</strong></p>
-  </header>
+  <h1>💖 Private Love Dashboard 💖</h1>
+  <div class="dashboard" id="dashboardResults"></div>
 
-  <main id="dashboard"></main>
-
-  <footer>
-    Made with 💘 by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
+  <div class="credits">
+    Developed with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
     &copy; 2025 Pradipta Chandra Giri. All rights reserved.
-  </footer>
+  </div>
 
   <script>
-    // Load and show dashboard entries for Pradipta only
-    const dashboardContainer = document.getElementById('dashboard');
-    const storedResults = JSON.parse(localStorage.getItem("loveResults")) || [];
+    const urlParams = new URLSearchParams(window.location.search);
+    const refName = urlParams.get("ref");
+    const results = JSON.parse(localStorage.getItem("loveResults") || "[]");
 
-    const filteredResults = storedResults.filter(result => 
-      result.refName && result.refName.toLowerCase() === "pradipta"
-    );
+    const filtered = refName
+      ? results.filter(r => r.user.toLowerCase() === refName.toLowerCase())
+      : results;
 
-    if (filteredResults.length === 0) {
-      dashboardContainer.innerHTML = "<p>No results found for you yet.</p>";
+    const container = document.getElementById("dashboardResults");
+
+    if (filtered.length === 0) {
+      container.innerHTML = "<p style='text-align:center;'>No love results found for this name 💔</p>";
     } else {
-      filteredResults.reverse().forEach(({ userName, crushName, lovePercent, timestamp }) => {
-        const entry = document.createElement("div");
-        entry.classList.add("record");
-        entry.innerHTML = `
-          <p><strong>${userName}</strong> ❤️ <strong>${crushName}</strong></p>
-          <p>Love Percentage: <strong>${lovePercent}%</strong></p>
-          <p><small>${timestamp}</small></p>
+      filtered.reverse().forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "entry";
+        div.innerHTML = `
+          <strong>${entry.user}</strong> ❤️ <strong>${entry.crush}</strong><br>
+          Love Score: ${entry.score}%<br>
+          <small>${new Date(entry.timestamp).toLocaleString()}</small>
         `;
-        dashboardContainer.appendChild(entry);
+        container.appendChild(div);
       });
     }
   </script>
 </body>
+
 </html>
