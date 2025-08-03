@@ -1,5 +1,3 @@
-// script.js (Final + UI Filters for Name & Date)
-
 const name1Input = document.getElementById('name1');
 const name2Input = document.getElementById('name2');
 const calcBtn = document.getElementById('calcBtn');
@@ -57,32 +55,24 @@ function displayHistoryEntries() {
   const history = loadHistory();
   historyBody.innerHTML = '';
 
-  if (!isOwner) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" style="text-align:center;">History is private to the sender.</td>`;
-    historyBody.appendChild(tr);
-    return;
-  }
+  const filteredName = filterNameInput.value.trim().toLowerCase();
+  const filteredDate = filterDateInput.value.trim();
 
-  const sharedEntries = history.filter(entry => entry.from === 'receiver');
-
-  const filterName = filterNameInput.value.trim().toLowerCase();
-  const filterDate = filterDateInput.value;
-
-  const filtered = sharedEntries.filter(entry => {
-    const matchName = !filterName || entry.name1.toLowerCase().includes(filterName) || entry.name2.toLowerCase().includes(filterName);
-    const matchDate = !filterDate || entry.date.startsWith(filterDate);
-    return matchName && matchDate;
+  const filteredEntries = history.filter(entry => {
+    if (!isOwner && entry.from !== 'receiver') return false;
+    if (filteredName && !entry.name1.toLowerCase().includes(filteredName) && !entry.name2.toLowerCase().includes(filteredName)) return false;
+    if (filteredDate && !entry.date.includes(filteredDate)) return false;
+    return true;
   });
 
-  if (filtered.length === 0) {
+  if (filteredEntries.length === 0) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" style="text-align:center;">No matching results found.</td>`;
+    tr.innerHTML = `<td colspan="4" style="text-align:center;">No matching entries found.</td>`;
     historyBody.appendChild(tr);
     return;
   }
 
-  for (const entry of filtered) {
+  for (const entry of filteredEntries) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${escapeHtml(entry.name1)} 👤</td>
@@ -169,7 +159,7 @@ if (!isOwner) {
   sharedMsg.textContent = `💌 This love calculator was shared with you by ${sharerName}`;
 }
 
-filterNameInput.addEventListener('input', displayHistoryEntries);
-filterDateInput.addEventListener('change', displayHistoryEntries);
-
 displayHistoryEntries();
+
+filterNameInput.addEventListener('input', displayHistoryEntries);
+filterDateInput.addEventListener('input', displayHistoryEntries);
