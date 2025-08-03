@@ -2,71 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Love Calculator 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Love Calculator by Pradipta</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-      color: #333;
+      background: linear-gradient(120deg, #ff9a9e, #fad0c4);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-    h1 {
-      font-size: 2.5rem;
-      color: #e60073;
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
     }
     input {
       padding: 0.5rem;
       margin: 0.5rem;
-      border-radius: 10px;
-      border: none;
+      border: 1px solid #ccc;
+      border-radius: 1rem;
       width: 80%;
-      max-width: 300px;
-      text-align: center;
     }
     button {
-      padding: 0.7rem 2rem;
-      margin-top: 1rem;
-      background-color: #ff4d88;
+      padding: 0.5rem 1.5rem;
+      background: #ff5e78;
       color: white;
       border: none;
-      border-radius: 20px;
-      font-size: 1rem;
+      border-radius: 1rem;
       cursor: pointer;
+      margin-top: 1rem;
     }
-    button:hover {
-      background-color: #e60073;
-    }
-    #result {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      text-align: center;
-      background-color: white;
-      padding: 1rem;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    #links {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    #links a {
-      display: block;
-      margin: 0.3rem;
-      color: #e60073;
+    .result {
+      margin-top: 1rem;
       font-weight: bold;
-      text-decoration: none;
     }
-    footer {
-      margin-top: 3rem;
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
       text-align: center;
-      font-size: 0.9rem;
-      color: #333;
     }
-    footer a {
+    .footer a {
       color: #333;
       text-decoration: none;
       font-weight: bold;
@@ -74,65 +57,58 @@
   </style>
 </head>
 <body>
-  <h1>💖 Love Calculator 💖</h1>
-  <input type="text" id="yourName" placeholder="Your Name" />
-  <input type="text" id="crushName" placeholder="Crush's Name" />
-  <button onclick="calculateLove()">Calculate</button>
-
-  <div id="result"></div>
-  <div id="links"></div>
-
-  <footer>
-    Created with ❤️ by 
+  <div class="container">
+    <h2>💖 Love Calculator 💖</h2>
+    <input type="text" id="yourName" placeholder="Your Name" />
+    <input type="text" id="crushName" placeholder="Crush's Name" />
+    <button onclick="calculateLove()">Calculate</button>
+    <div class="result" id="result"></div>
+    <div class="result" id="gift"></div>
+    <div class="result" id="shareLink"></div>
+    <div class="result" id="dashboardLink"></div>
+  </div>
+  <div class="footer">
+    Made with ❤️ by 
     <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
       Pradipta Chandra Giri
-    </a><br/>
-    © 2025 All Rights Reserved
-  </footer>
+    </a><br>
+    &copy; 2025 Pradipta. All rights reserved.
+  </div>
 
   <script>
     function calculateLove() {
-      const yourName = document.getElementById("yourName").value.trim();
-      const crushName = document.getElementById("crushName").value.trim();
-      const resultDiv = document.getElementById("result");
-      const linksDiv = document.getElementById("links");
+      const yourName = document.getElementById('yourName').value.trim();
+      const crushName = document.getElementById('crushName').value.trim();
 
       if (!yourName || !crushName) {
-        resultDiv.innerHTML = "Please enter both names!";
-        linksDiv.innerHTML = "";
+        alert("Please enter both names!");
         return;
       }
 
-      let lovePercent;
-      const key = `${yourName.toLowerCase()}-${crushName.toLowerCase()}`;
-      const storedResult = localStorage.getItem(key);
-
-      if (storedResult) {
-        lovePercent = parseInt(storedResult.split("|")[0]);
+      let percentage;
+      if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
+        percentage = Math.floor(Math.random() * 10) + 90;
+        document.getElementById('gift').innerText = "🎁 Special Message for Bishnupriya: You are cherished deeply! 💌";
       } else {
-        if (yourName.toLowerCase().includes("pradipta") &&
-            crushName.toLowerCase().includes("bishnupriya")) {
-          lovePercent = 90 + Math.floor(Math.random() * 10); // 90-99%
-        } else {
-          lovePercent = Math.floor(Math.random() * 101); // 0-100%
+        const seed = (yourName + crushName).toLowerCase();
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+          hash = seed.charCodeAt(i) + ((hash << 5) - hash);
         }
-
-        const timestamp = new Date().toLocaleString();
-        localStorage.setItem(key, `${lovePercent}|${timestamp}`);
+        percentage = Math.abs(hash % 101);
+        document.getElementById('gift').innerText = "";
       }
 
-      resultDiv.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br/>Love is <strong>${lovePercent}%</strong>`;
+      const timestamp = new Date().toISOString();
+      const urlParams = new URLSearchParams(window.location.search);
+      const refName = urlParams.get("ref") || yourName.toLowerCase();
+      const data = JSON.parse(localStorage.getItem("loveResults") || "[]");
+      data.push({ yourName, crushName, percentage, refName, timestamp });
+      localStorage.setItem("loveResults", JSON.stringify(data));
 
-      if (yourName.toLowerCase().includes("pradipta") &&
-          crushName.toLowerCase().includes("bishnupriya")) {
-        resultDiv.innerHTML += `<br/><em>💌 Special Message: You're meant to be! Here's a virtual rose 🌹</em>`;
-      }
-
-      const encodedRef = encodeURIComponent(yourName);
-      linksDiv.innerHTML = `
-        🔗 <a href="?ref=${encodedRef}">Share Your Link</a>
-        📊 <a href="dashboard.html?ref=${encodedRef}">Go to Your Private Dashboard</a>
-      `;
+      document.getElementById("result").innerText = `Love Score: ${percentage}%`;
+      document.getElementById("shareLink").innerHTML = `🔗 Share this link: <br><a href="index.html?ref=${encodeURIComponent(refName)}">index.html?ref=${refName}</a>`;
+      document.getElementById("dashboardLink").innerHTML = `📊 Your Dashboard: <br><a href="dashboard.html?ref=${encodeURIComponent(refName)}">dashboard.html?ref=${refName}</a>`;
     }
   </script>
 </body>
