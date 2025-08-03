@@ -1,83 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Private Love Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Calculator Dashboard</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ffdde1, #ee9ca7);
-      color: #333;
-      margin: 0;
+      background: linear-gradient(to right, #ff6a6a, #ffa07a);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
       padding: 20px;
       text-align: center;
     }
-
     h1 {
-      color: #c0392b;
-      font-size: 2em;
+      font-size: 2.5em;
       margin-bottom: 10px;
     }
-
-    #refName {
-      font-weight: bold;
-      color: #8e44ad;
+    .no-results {
+      font-size: 1.2em;
+      margin-top: 30px;
     }
-
     table {
-      margin: 20px auto;
-      border-collapse: collapse;
+      margin: 30px auto;
       width: 90%;
-      max-width: 800px;
-      background: white;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      max-width: 900px;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
       border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 0 10px #fff;
     }
-
     th, td {
       padding: 12px 15px;
+      text-align: center;
       border-bottom: 1px solid #ddd;
     }
-
     th {
-      background-color: #f06292;
+      background-color: #ff4b5c;
       color: white;
     }
-
     tr:hover {
-      background-color: #fce4ec;
+      background-color: #ffe0e0;
     }
-
-    .no-data {
-      color: #555;
-      font-style: italic;
-      margin-top: 20px;
-    }
-
     .footer {
-      margin-top: 50px;
-      font-size: 14px;
-      color: #666;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #fff;
     }
-
-    a {
-      color: #8e44ad;
-      text-decoration: none;
-    }
-
-    a:hover {
+    .footer a {
+      color: #fff;
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>❤️ Private Dashboard for <span id="refName"></span></h1>
-  <div id="resultTable"></div>
+  <h1>🔒 Private Love Dashboard</h1>
+  <div id="results"></div>
 
   <div class="footer">
-    Made with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
-    © 2025 Pradipta Chandra Giri. All rights reserved.
+    &copy; 2025 <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a>. All rights reserved.
   </div>
 
   <script>
@@ -86,49 +68,42 @@
       return urlParams.get(key);
     }
 
-    const ref = getQueryParam('ref');
-    document.getElementById("refName").textContent = ref ? ref : "Unknown";
+    const ref = getQueryParam("ref");
+    const allResults = JSON.parse(localStorage.getItem("loveResults") || "[]");
 
-    const container = document.getElementById("resultTable");
+    const filteredResults = allResults.filter(entry => entry.ref === ref);
 
-    if (ref) {
-      const storedData = JSON.parse(localStorage.getItem("loveResults")) || [];
-      const filtered = storedData.filter(entry => entry.ref === ref);
+    const resultsDiv = document.getElementById("results");
 
-      if (filtered.length > 0) {
-        let html = `
-          <table>
-            <thead>
-              <tr>
-                <th>Your Name</th>
-                <th>Crush's Name</th>
-                <th>Love %</th>
-                <th>Message</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        filtered.forEach(entry => {
-          html += `
-            <tr>
-              <td>${entry.name}</td>
-              <td>${entry.crush}</td>
-              <td>${entry.percentage}%</td>
-              <td>${entry.message}</td>
-              <td>${new Date(entry.timestamp).toLocaleString()}</td>
-            </tr>
-          `;
-        });
-
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-      } else {
-        container.innerHTML = `<div class="no-data">No entries found for "${ref}".</div>`;
-      }
+    if (filteredResults.length === 0) {
+      resultsDiv.innerHTML = `<div class="no-results">No entries found for this shared link.</div>`;
     } else {
-      container.innerHTML = `<div class="no-data">Invalid or missing dashboard reference (ref).</div>`;
+      const table = document.createElement("table");
+
+      table.innerHTML = `
+        <tr>
+          <th>Your Name</th>
+          <th>Crush's Name</th>
+          <th>Love %</th>
+          <th>Message</th>
+          <th>Time</th>
+        </tr>
+      `;
+
+      filteredResults.forEach(result => {
+        const row = document.createElement("tr");
+        const date = new Date(result.timestamp).toLocaleString();
+        row.innerHTML = `
+          <td>${result.name}</td>
+          <td>${result.crush}</td>
+          <td>${result.percentage}</td>
+          <td>${result.message}</td>
+          <td>${date}</td>
+        `;
+        table.appendChild(row);
+      });
+
+      resultsDiv.appendChild(table);
     }
   </script>
 </body>
