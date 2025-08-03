@@ -1,81 +1,130 @@
-const name1Input = document.getElementById('name1');
-const name2Input = document.getElementById('name2');
-const calcBtn = document.getElementById('calcBtn');
-const resultDiv = document.getElementById('result');
-const historyBody = document.getElementById('history-body');
-const shareLinkBtn = document.getElementById('shareLinkBtn');
-const shareModal = document.getElementById('shareModal');
-const sharerInput = document.getElementById('sharerInput');
-const generateLinkBtn = document.getElementById('generateLinkBtn');
-const copyMessage = document.getElementById('copyMessage');
-const sharedMsg = document.getElementById('sharedByMsg');
-const filterNameInput = document.getElementById('filterName');
-const filterDateInput = document.getElementById('filterDate');
+// === Love Calculator Script.js: Full Updated with Secure Owner View & Filters ===
 
-const params = new URLSearchParams(window.location.search);
-const sharerName = params.get('ref') || 'Anonymous';
-const localUser = localStorage.getItem('localUser');
-const isOwner = localUser === sharerName;
+// Utilities
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
 
-function calculateLovePercent(name1, name2) {
-  const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
+// DOM Elements
+const name1Input = document.getElementById("name1");
+const name2Input = document.getElementById("name2");
+const resultDiv = document.getElementById("result");
+const percentSpan = document.getElementById("lovePercent");
+const descSpan = document.getElementById("description");
+const historyBody = document.getElementById("historyBody");
+const dashboardSection = document.getElementById("dashboardSection");
+const filterNameInput = document.getElementById("filterName");
+const filterDateInput = document.getElementById("filterDate");
+
+// Owner Detection
+const urlParams = new URLSearchParams(window.location.search);
+const refName = urlParams.get("ref")?.toLowerCase();
+const savedOwner = localStorage.getItem("ownerName");
+const isOwner = !refName || (refName === savedOwner?.toLowerCase());
+
+if (!refName && !savedOwner) {
+  const yourName = prompt("Enter your name to create your private link:");
+  if (yourName) {
+    localStorage.setItem("ownerName", yourName.trim());
+    alert(`Your private link: ${location.href}?ref=${encodeURIComponent(yourName.trim())}`);
+  }
+}
+
+if (isOwner) {
+  dashboardSection.style.display = "block";
+} else {
+  dashboardSection.style.display = "none";
+}
+
+// Generate random love %
+function calculateLovePercentage(name1, name2) {
+  const combined = name1.toLowerCase().trim() + name2.toLowerCase().trim();
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
-    hash = (hash << 5) - hash + combined.charCodeAt(i);
-    hash |= 0;
+    hash += combined.charCodeAt(i);
   }
-  return (Math.abs(hash) % 100) + 1;
+  return (hash % 51) + 50; // 50% to 100%
 }
 
-function getLoveMessage(percent) {
-  if (percent > 80) return 'Soulmates! ❤️❤️❤️';
-  if (percent > 60) return 'Great match! 💖';
-  if (percent > 40) return 'Good connection! 💕';
-  if (percent > 20) return 'Needs some work. 💔';
-  return 'Better luck next time. 💔';
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-function saveEntry(entry) {
-  let history = JSON.parse(localStorage.getItem(sharerName)) || [];
+// Save entry
+function saveToHistory(entry) {
+  const key = "loveHistory";
+  let history = JSON.parse(localStorage.getItem(key)) || [];
   history.push(entry);
-  localStorage.setItem(sharerName, JSON.stringify(history));
+  localStorage.setItem(key, JSON.stringify(history));
 }
 
+// Load full history
 function loadHistory() {
-  return JSON.parse(localStorage.getItem(sharerName)) || [];
+  const key = "loveHistory";
+  return JSON.parse(localStorage.getItem(key)) || [];
 }
 
+// Show result
+function showResult(percent, desc) {
+  percentSpan.textContent = `${percent}% ❤️`;
+  descSpan.textContent = desc;
+  resultDiv.style.display = "block";
+}
+
+// Button click
+function calculateLove() {
+  const name1 = name1Input.value.trim();
+  const name2 = name2Input.value.trim();
+  if (!name1 || !name2) return alert("Please enter both names!");
+
+  const percent = calculateLovePercentage(name1, name2);
+  let desc = "Great match!";
+  if (percent < 60) desc = "Try harder!";
+  else if (percent > 85) desc = "Perfect couple! 💖";
+
+  showResult(percent, desc);
+
+  saveToHistory({
+    name1, name2, lovePercent: percent,
+    date: new Date().toLocaleDateString(),
+    from: refName ? "receiver" : "self",
+    ref: refName || savedOwner
+  });
+  displayHistoryEntries();
+}
+
+// Display only receiver entries for this owner
 function displayHistoryEntries() {
   const history = loadHistory();
-  historyBody.innerHTML = '';
+  historyBody.innerHTML = "";
 
-  const filteredName = filterNameInput.value.trim().toLowerCase();
-  const filteredDate = filterDateInput.value.trim();
-
-  const filteredEntries = history.filter(entry => {
-    if (!isOwner && entry.from !== 'receiver') return false;
-    if (filteredName && !entry.name1.toLowerCase().includes(filteredName) && !entry.name2.toLowerCase().includes(filteredName)) return false;
-    if (filteredDate && !entry.date.includes(filteredDate)) return false;
-    return true;
-  });
-
-  if (filteredEntries.length === 0) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="4" style="text-align:center;">No matching entries found.</td>`;
+  if (!isOwner) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" style="text-align:center;">Private dashboard</td>`;
     historyBody.appendChild(tr);
     return;
   }
 
-  for (const entry of filteredEntries) {
-    const tr = document.createElement('tr');
+  const filtered = history.filter(e => e.from === "receiver" && e.ref?.toLowerCase() === savedOwner?.toLowerCase());
+
+  const nameFilter = filterNameInput.value.trim().toLowerCase();
+  const dateFilter = filterDateInput.value.trim();
+
+  const finalEntries = filtered.filter(e => {
+    return (!nameFilter || e.name1.toLowerCase().includes(nameFilter) || e.name2.toLowerCase().includes(nameFilter)) &&
+           (!dateFilter || e.date === dateFilter);
+  });
+
+  if (finalEntries.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="4" style="text-align:center;">No matches found.</td>`;
+    historyBody.appendChild(tr);
+    return;
+  }
+
+  for (const entry of finalEntries.reverse()) {
+    const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${escapeHtml(entry.name1)} 👤</td>
+      <td>${escapeHtml(entry.name1)}</td>
       <td>${escapeHtml(entry.name2)}</td>
       <td>${entry.lovePercent}%</td>
       <td>${escapeHtml(entry.date)}</td>
@@ -84,82 +133,17 @@ function displayHistoryEntries() {
   }
 }
 
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).catch(() => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand('copy');
-    } catch {}
-    document.body.removeChild(textarea);
-  });
+// Copy private link
+function copyPrivateLink() {
+  const owner = localStorage.getItem("ownerName");
+  if (!owner) return alert("Please set your name first!");
+  const link = `${location.origin}${location.pathname}?ref=${encodeURIComponent(owner)}`;
+  navigator.clipboard.writeText(link)
+    .then(() => alert("Link copied to clipboard!"))
+    .catch(() => alert("Failed to copy link."));
 }
 
-calcBtn.addEventListener('click', () => {
-  if (!sharerName) {
-    alert("Invalid sharer.");
-    return;
-  }
-
-  const name1 = name1Input.value.trim();
-  const name2 = name2Input.value.trim();
-  if (!name1 || !name2) {
-    alert("Please enter both names.");
-    return;
-  }
-
-  const lovePercent = calculateLovePercent(name1, name2);
-  const message = getLoveMessage(lovePercent);
-  resultDiv.textContent = `${lovePercent}% - ${message}`;
-
-  const entry = {
-    name1,
-    name2,
-    lovePercent,
-    date: new Date().toLocaleString(),
-    from: isOwner ? 'self' : 'receiver'
-  };
-
-  saveEntry(entry);
-  displayHistoryEntries();
-});
-
-shareLinkBtn.addEventListener('click', () => {
-  shareModal.style.display = 'block';
-  sharerInput.value = '';
-  copyMessage.textContent = '';
-  sharerInput.focus();
-});
-
-generateLinkBtn.addEventListener('click', () => {
-  const sender = sharerInput.value.trim();
-  if (!sender) {
-    alert("Please enter your name.");
-    return;
-  }
-  const shareUrl = `${window.location.origin}${window.location.pathname}?ref=${encodeURIComponent(sender)}`;
-  copyToClipboard(shareUrl);
-  copyMessage.textContent = "Link copied!";
-  localStorage.setItem('localUser', sender);
-  shareModal.style.display = 'none';
-  alert("Link copied! Share it with friends.");
-});
-
-window.onclick = function (event) {
-  if (event.target == shareModal) {
-    shareModal.style.display = "none";
-  }
-};
-
-if (!isOwner) {
-  sharedMsg.textContent = `💌 This love calculator was shared with you by ${sharerName}`;
-}
-
-displayHistoryEntries();
-
-filterNameInput.addEventListener('input', displayHistoryEntries);
-filterDateInput.addEventListener('input', displayHistoryEntries);
+// Event Listeners
+filterNameInput.addEventListener("input", displayHistoryEntries);
+filterDateInput.addEventListener("change", displayHistoryEntries);
+window.onload = displayHistoryEntries;
