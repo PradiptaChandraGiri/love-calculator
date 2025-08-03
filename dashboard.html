@@ -1,106 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Love Calculator - Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Love Calculator Dashboard 💘</title>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #ffe0ec, #f9f4ff);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      padding: 2rem;
+      color: #333;
     }
-
     h1 {
-      font-family: 'Great Vibes', cursive;
-      font-size: 3rem;
-      color: #d6336c;
-      margin: 30px 0 10px;
+      text-align: center;
+      color: #c6009d;
     }
-
-    .dashboard {
-      width: 90%;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    table {
+      width: 100%;
+      max-width: 700px;
+      margin: auto;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
     }
-
-    .entry {
-      padding: 10px;
+    th, td {
+      padding: 0.8rem 1rem;
       border-bottom: 1px solid #eee;
+      text-align: center;
     }
-
-    .entry:last-child {
+    th {
+      background-color: #f06292;
+      color: white;
+    }
+    tr:last-child td {
       border-bottom: none;
     }
-
-    .entry strong {
-      color: #d6336c;
-    }
-
-    .credits {
-      margin-top: 30px;
-      font-size: 0.9rem;
+    .no-data {
       text-align: center;
-      color: #888;
+      margin-top: 3rem;
+      font-size: 1.2rem;
+      color: #444;
     }
-
-    .credits a {
-      color: #d6336c;
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+    }
+    footer a {
       text-decoration: none;
-    }
-
-    .credits a:hover {
-      text-decoration: underline;
+      color: #333;
+      font-weight: bold;
     }
   </style>
 </head>
-
 <body>
-  <h1>💖 Private Love Dashboard 💖</h1>
-  <div class="dashboard" id="dashboardResults"></div>
+  <h1>💘 Private Love Dashboard 💘</h1>
+  <div id="dashboardContent" class="no-data">Loading your data...</div>
 
-  <div class="credits">
-    Developed with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
-    &copy; 2025 Pradipta Chandra Giri. All rights reserved.
-  </div>
+  <footer>
+    Created by 
+    <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
+      Pradipta Chandra Giri
+    </a> | © 2025
+  </footer>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const refName = urlParams.get("ref");
-    const results = JSON.parse(localStorage.getItem("loveResults") || "[]");
+    const params = new URLSearchParams(window.location.search);
+    const refName = params.get("ref")?.toLowerCase();
 
-    const filtered = refName
-      ? results.filter(r => r.user.toLowerCase() === refName.toLowerCase())
-      : results;
+    const contentDiv = document.getElementById("dashboardContent");
 
-    const container = document.getElementById("dashboardResults");
-
-    if (filtered.length === 0) {
-      container.innerHTML = "<p style='text-align:center;'>No love results found for this name 💔</p>";
+    if (!refName) {
+      contentDiv.innerHTML = "⚠️ Invalid access. Use your personalized dashboard link.";
     } else {
-      filtered.reverse().forEach(entry => {
-        const div = document.createElement("div");
-        div.className = "entry";
-        div.innerHTML = `
-          <strong>${entry.user}</strong> ❤️ <strong>${entry.crush}</strong><br>
-          Love Score: ${entry.score}%<br>
-          <small>${new Date(entry.timestamp).toLocaleString()}</small>
+      let results = [];
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const [yourName, crushName] = key.split("-");
+        const value = localStorage.getItem(key);
+        
+        if (yourName && yourName.toLowerCase() === refName && value) {
+          const [percent, time] = value.split("|");
+          results.push({ yourName, crushName, percent, time });
+        }
+      }
+
+      if (results.length === 0) {
+        contentDiv.innerHTML = `🙁 No love results found for <strong>${refName}</strong>.`;
+      } else {
+        let tableHTML = `
+          <table>
+            <tr>
+              <th>Your Name</th>
+              <th>Crush Name</th>
+              <th>Love %</th>
+              <th>Timestamp</th>
+            </tr>
         `;
-        container.appendChild(div);
-      });
+
+        results.forEach(entry => {
+          tableHTML += `
+            <tr>
+              <td>${entry.yourName}</td>
+              <td>${entry.crushName}</td>
+              <td>${entry.percent}%</td>
+              <td>${entry.time}</td>
+            </tr>
+          `;
+        });
+
+        tableHTML += `</table>`;
+        contentDiv.innerHTML = tableHTML;
+      }
     }
   </script>
 </body>
-
 </html>
