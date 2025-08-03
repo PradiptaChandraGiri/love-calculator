@@ -8,19 +8,20 @@ const shareModal = document.getElementById('shareModal');
 const sharerInput = document.getElementById('sharerInput');
 const generateLinkBtn = document.getElementById('generateLinkBtn');
 const copyMessage = document.getElementById('copyMessage');
+const sharedMsg = document.getElementById('sharedByMsg');
 
 const params = new URLSearchParams(window.location.search);
 const sharerName = params.get('ref') || 'Anonymous';
 const localUser = localStorage.getItem('localUser');
 const isOwner = localUser === sharerName;
 
-// Consistent formula for same name pair
+// Consistent formula
 function calculateLovePercent(name1, name2) {
   const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     hash = (hash << 5) - hash + combined.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
+    hash |= 0;
   }
   return (Math.abs(hash) % 100) + 1;
 }
@@ -68,9 +69,10 @@ function displayHistoryEntries() {
   }
 
   for (const entry of history) {
+    const label = entry.from === 'self' ? '' : ' 👤 (from shared link)';
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${escapeHtml(entry.name1)}</td>
+      <td>${escapeHtml(entry.name1)}${label}</td>
       <td>${escapeHtml(entry.name2)}</td>
       <td>${entry.lovePercent}%</td>
       <td>${escapeHtml(entry.date)}</td>
@@ -94,10 +96,9 @@ function copyToClipboard(text) {
   });
 }
 
-// Calculate Love %
 calcBtn.addEventListener('click', () => {
-  if (!isOwner) {
-    alert("You can only calculate from your own private link.");
+  if (!sharerName) {
+    alert("Invalid sharer.");
     return;
   }
 
@@ -112,11 +113,18 @@ calcBtn.addEventListener('click', () => {
   const message = getLoveMessage(lovePercent);
   resultDiv.textContent = `${lovePercent}% - ${message}`;
 
-  saveEntry({ name1, name2, lovePercent, date: new Date().toLocaleString() });
+  const entry = {
+    name1,
+    name2,
+    lovePercent,
+    date: new Date().toLocaleString(),
+    from: isOwner ? 'self' : 'receiver'
+  };
+
+  saveEntry(entry);
   displayHistoryEntries();
 });
 
-// Share link modal
 shareLinkBtn.addEventListener('click', () => {
   shareModal.style.display = 'block';
   sharerInput.value = '';
@@ -124,7 +132,6 @@ shareLinkBtn.addEventListener('click', () => {
   sharerInput.focus();
 });
 
-// Generate and copy link
 generateLinkBtn.addEventListener('click', () => {
   const sender = sharerInput.value.trim();
   if (!sender) {
@@ -139,12 +146,16 @@ generateLinkBtn.addEventListener('click', () => {
   alert("Link copied! Share it with friends.");
 });
 
-// Modal close
 window.onclick = function (event) {
   if (event.target == shareModal) {
     shareModal.style.display = "none";
   }
 };
+
+// Display "Shared by" message for receiver
+if (!isOwner) {
+  sharedMsg.textContent = `💌 This love calculator was shared with you by ${sharerName}`;
+}
 
 // Initial load
 displayHistoryEntries();
