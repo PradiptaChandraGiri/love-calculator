@@ -1,89 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Calculator 💖</title>
+    <title>Love Calculator</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffe6e6;
             padding: 20px;
-            margin: 0;
         }
+
         h1 {
-            color: #d63384;
+            color: #ff3366;
         }
-        input, button {
+
+        input {
             padding: 10px;
-            margin: 5px;
-            border-radius: 10px;
-            border: none;
+            margin: 10px;
+            border: 2px solid #ff99aa;
+            border-radius: 5px;
             font-size: 16px;
         }
+
         button {
-            background-color: #d63384;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff3366;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
-        #result {
-            margin-top: 15px;
-            font-size: 18px;
-            color: #333;
-        }
-        #dashboard {
-            display: none;
-            margin-top: 30px;
-            width: 100%;
-            max-width: 600px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-            border-bottom: 1px solid #ccc;
-        }
-        #filter {
+
+        #dashboard,
+        #result,
+        #shareableLink,
+        #dashboardLink {
             margin-top: 20px;
         }
-        #dashboardLink, #shareableLink {
-            background-color: #fff3cd;
-            color: #856404;
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
             padding: 10px;
-            border-radius: 10px;
-            margin: 10px;
         }
     </style>
 </head>
+
 <body>
-    <h1>💕 Love Calculator</h1>
+    <h1>💘 Love Calculator 💘</h1>
     <div id="inputSection">
         <input type="text" id="name1" placeholder="Your Name">
-        <input type="text" id="name2" placeholder="Crush Name">
-        <button onclick="calculateLove()">Calculate</button>
-        <div id="result"></div>
+        <input type="text" id="name2" placeholder="Crush's Name">
+        <br>
+        <button onclick="calculateLove()">Calculate Love %</button>
     </div>
 
+    <div id="result"></div>
     <div id="shareableLink"></div>
     <div id="dashboardLink"></div>
 
-    <div id="dashboard">
-        <h2>📋 Receiver Submissions</h2>
-        <input type="text" id="nameFilter" placeholder="Filter by Receiver Name">
+    <div id="dashboard" style="display: none;">
+        <h2>Your Love Dashboard 💖</h2>
+        <input type="text" id="nameFilter" placeholder="Filter by Name">
         <input type="date" id="dateFilter">
         <table>
             <thead>
                 <tr>
-                    <th>Receiver Name</th>
-                    <th>Crush Name</th>
-                    <th>Match %</th>
+                    <th>Your Name</th>
+                    <th>Crush's Name</th>
+                    <th>Love %</th>
                     <th>Date</th>
                 </tr>
             </thead>
@@ -94,74 +90,78 @@
     <script>
         const queryParams = new URLSearchParams(window.location.search);
         const refName = queryParams.get("ref");
+        const dashboardName = queryParams.get("dashboard");
 
-        if (!refName) {
-            document.getElementById("shareableLink").innerHTML = "";
-        } else {
-            document.getElementById("inputSection").style.display = "block";
-        }
+        const inputSection = document.getElementById("inputSection");
+        const resultDiv = document.getElementById("result");
+        const dashboard = document.getElementById("dashboard");
+        const logBody = document.getElementById("logBody");
+
+        inputSection.style.display = "block";
 
         function calculateLove() {
             const name1 = document.getElementById("name1").value.trim();
             const name2 = document.getElementById("name2").value.trim();
 
-            if (!name1 || !name2) return alert("Please enter both names!");
+            if (!name1 || !name2) {
+                alert("Please enter both names!");
+                return;
+            }
 
-            const loveScore = Math.floor(Math.random() * 41) + 60; // 60–100%
-            document.getElementById("result").innerText = `${name1} ❤️ ${name2} = ${loveScore}%`;
+            const loveScore = Math.floor(Math.random() * 41) + 60; // 60-100%
+            const today = new Date().toISOString().split("T")[0];
+            resultDiv.innerText = `${name1} ❤️ ${name2} = ${loveScore}%`;
 
-            const now = new Date().toISOString().split("T")[0];
+            const owner = refName || localStorage.getItem("ownerName") || name1;
+            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
+            logs.push({ owner, name1, name2, loveScore, date: today });
+            localStorage.setItem("loveLogs", JSON.stringify(logs));
 
-            // If the sender is generating the link
-            if (!refName) {
-                // Save sender name locally
-                localStorage.setItem("ownerName", name1);
-
-                // Show shareable and dashboard links
-                const shareLink = `${window.location.origin + window.location.pathname}?ref=${encodeURIComponent(name1)}`;
-                const dashboardLink = `${window.location.origin + window.location.pathname}?dashboard=${encodeURIComponent(name1)}`;
-
-                document.getElementById("shareableLink").innerHTML = `🔗 Share this link with your crush: <br><strong>${shareLink}</strong>`;
-                document.getElementById("dashboardLink").innerHTML = `📊 View your private dashboard here: <br><strong>${dashboardLink}</strong>`;
+            if (refName) {
+                resultDiv.innerText += "\nSaved privately.";
             } else {
-                // This is receiver filling in data via shared link
-                const log = JSON.parse(localStorage.getItem("loveLogs") || "[]");
-                log.push({ owner: refName, name1, name2, loveScore, date: now });
-                localStorage.setItem("loveLogs", JSON.stringify(log));
-                document.getElementById("result").innerText += "\nSaved privately.";
+                localStorage.setItem("ownerName", name1);
+                const baseUrl = window.location.origin + window.location.pathname;
+                document.getElementById("shareableLink").innerHTML =
+                    `🔗 Share this link with your crush:<br><strong>${baseUrl}?ref=${encodeURIComponent(name1)}</strong>`;
+                document.getElementById("dashboardLink").innerHTML =
+                    `📊 View your private dashboard here:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(name1)}</strong>`;
             }
         }
 
-        // Show dashboard if dashboard mode
-        const dashboardName = queryParams.get("dashboard");
-        if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
-            document.getElementById("dashboard").style.display = "block";
-            const allLogs = JSON.parse(localStorage.getItem("loveLogs") || "[]");
-            const filteredLogs = allLogs.filter(entry => entry.owner === dashboardName);
-            renderLogs(filteredLogs);
-
-            document.getElementById("nameFilter").addEventListener("input", function() {
-                const filterVal = this.value.toLowerCase();
-                const filtered = filteredLogs.filter(entry => entry.name1.toLowerCase().includes(filterVal));
-                renderLogs(filtered);
-            });
-
-            document.getElementById("dateFilter").addEventListener("change", function() {
-                const filterVal = this.value;
-                const filtered = filteredLogs.filter(entry => entry.date === filterVal);
-                renderLogs(filtered);
+        function renderLogs(logs) {
+            logBody.innerHTML = "";
+            logs.forEach(log => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${log.name1}</td>
+                    <td>${log.name2}</td>
+                    <td>${log.loveScore}%</td>
+                    <td>${log.date}</td>
+                `;
+                logBody.appendChild(row);
             });
         }
 
-        function renderLogs(logs) {
-            const body = document.getElementById("logBody");
-            body.innerHTML = "";
-            logs.forEach(entry => {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${entry.name1}</td><td>${entry.name2}</td><td>${entry.loveScore}%</td><td>${entry.date}</td>`;
-                body.appendChild(row);
+        if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
+            dashboard.style.display = "block";
+            const logs = JSON.parse(localStorage.getItem("loveLogs") || "[]")
+                .filter(log => log.owner === dashboardName);
+            renderLogs(logs);
+
+            document.getElementById("nameFilter").addEventListener("input", function () {
+                const filterVal = this.value.toLowerCase();
+                const filtered = logs.filter(log => log.name1.toLowerCase().includes(filterVal));
+                renderLogs(filtered);
+            });
+
+            document.getElementById("dateFilter").addEventListener("change", function () {
+                const dateVal = this.value;
+                const filtered = logs.filter(log => log.date === dateVal);
+                renderLogs(filtered);
             });
         }
     </script>
 </body>
+
 </html>
