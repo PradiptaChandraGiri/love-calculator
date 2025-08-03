@@ -2,122 +2,160 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Calculator 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Calculator</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom right, #ffccd5, #ffe6eb);
-      text-align: center;
-      padding: 40px;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #fce4ec;
       color: #333;
     }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
+    h1 {
+      color: #e91e63;
+      text-align: center;
+    }
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.2rem;
     }
     button {
-      background-color: #ff5e78;
-      color: white;
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #e91e63;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #e34761;
+    .links {
+      margin-top: 2rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .links p {
+      margin: 0.5rem 0;
     }
     .result {
-      font-size: 22px;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-    .credit {
-      margin-top: 40px;
-      font-size: 14px;
-    }
-    .link-section {
-      margin-top: 30px;
-      font-size: 16px;
-    }
-    a {
-      color: #c21f3c;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    a:hover {
-      text-decoration: underline;
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      color: green;
     }
   </style>
 </head>
 <body>
-  <h1>💕 Love Calculator 💕</h1>
 
-  <div>
-    <input type="text" id="yourName" placeholder="Your Name" />
-    <input type="text" id="crushName" placeholder="Crush's Name" />
-    <br>
-    <button onclick="calculateLove()">Calculate Love %</button>
-  </div>
+  <h1>❤️ Love Calculator ❤️</h1>
 
-  <div class="result" id="loveResult"></div>
+  <form id="loveForm">
+    <label for="yourName">Your Name</label>
+    <input type="text" id="yourName" required />
 
-  <div class="link-section">
-    <input type="text" id="refInput" placeholder="Enter your share name (e.g., adsxc)" />
-    <button onclick="generateLinks()">Generate My Links</button>
-    <div id="linkOutput"></div>
-  </div>
+    <label for="crushName">Crush's Name</label>
+    <input type="text" id="crushName" required />
 
-  <div class="credit">
-    Created with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br>
-    &copy; 2025 All Rights Reserved
+    <button type="submit">Calculate</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <div class="links" id="links" style="display: none;">
+    <p>🔗 <strong>Share this link:</strong><br>
+    <a href="#" id="shareLink" target="_blank"></a></p>
+    
+    <p>📊 <strong>Your Dashboard:</strong><br>
+    <a href="#" id="dashboardLink" target="_blank"></a></p>
   </div>
 
   <script>
-    function calculateLove() {
+    const form = document.getElementById("loveForm");
+    const resultDiv = document.getElementById("result");
+    const linksDiv = document.getElementById("links");
+    const shareLinkEl = document.getElementById("shareLink");
+    const dashboardLinkEl = document.getElementById("dashboardLink");
+
+    function getRandomPercentage() {
+      return Math.floor(Math.random() * 51) + 50; // Random 50-100%
+    }
+
+    function getCurrentTimestamp() {
+      const now = new Date();
+      return now.toLocaleString();
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
       const yourName = document.getElementById("yourName").value.trim();
       const crushName = document.getElementById("crushName").value.trim();
+
       if (!yourName || !crushName) {
-        alert("Please enter both names!");
+        alert("Please fill both fields.");
         return;
       }
 
-      let percentage = 0;
+      const percentage = getRandomPercentage();
+      const timestamp = getCurrentTimestamp();
 
-      if (yourName.toLowerCase().includes("pradipta") && crushName.toLowerCase().includes("bishnupriya")) {
-        percentage = 90 + Math.floor(Math.random() * 10); // between 90-99
-      } else {
-        const combined = yourName + crushName;
-        let sum = 0;
-        for (let i = 0; i < combined.length; i++) {
-          sum += combined.charCodeAt(i);
-        }
-        percentage = (sum % 101);
+      const entry = {
+        yourName,
+        crushName,
+        percentage,
+        timestamp
+      };
+
+      const ref = yourName.toLowerCase().replace(/\s+/g, '');
+      const storageKey = "loveResults";
+      const existing = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+      existing.push({ ...entry, ref });
+      localStorage.setItem(storageKey, JSON.stringify(existing));
+
+      resultDiv.innerText = `Love Score between ${yourName} ❤️ ${crushName} is ${percentage}%`;
+
+      const basePath = `${window.location.origin}${window.location.pathname.replace(/[^\/]*$/, '')}`;
+      const shareLink = `${basePath}index.html?ref=${ref}`;
+      const dashboardLink = `${basePath}dashboard.html?ref=${ref}`;
+
+      shareLinkEl.href = shareLink;
+      shareLinkEl.innerText = shareLink;
+
+      dashboardLinkEl.href = dashboardLink;
+      dashboardLinkEl.innerText = dashboardLink;
+
+      linksDiv.style.display = "block";
+    });
+
+    // Auto-fill ref name if coming via share link
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get('ref');
+      if (ref) {
+        document.getElementById('yourName').value = ref;
       }
-
-      const resultText = `${yourName} ❤️ ${crushName} = ${percentage}%`;
-      document.getElementById("loveResult").innerText = resultText;
-
-      const ref = new URLSearchParams(window.location.search).get("ref") || yourName.toLowerCase();
-      const savedData = JSON.parse(localStorage.getItem("loveData") || "[]");
-      savedData.push({ name1: yourName, name2: crushName, percentage, ref, time: new Date().toLocaleString() });
-      localStorage.setItem("loveData", JSON.stringify(savedData));
-    }
-
-    function generateLinks() {
-      const refName = document.getElementById("refInput").value.trim();
-      if (!refName) {
-        alert("Please enter a share name");
-        return;
-      }
-      const indexURL = `${window.location.origin}${window.location.pathname}?ref=${refName}`;
-      const dashURL = `${window.location.origin}/dashboard.html?ref=${refName}`;
-
-      document.getElementById("linkOutput").innerHTML = `
-        🔗 Share this link: <a href="${indexURL}" target="_blank">${indexURL}</a><br>
-        📊 Your Dashboard: <a href="${dashURL}" target="_blank">${dashURL}</a>
-      `;
-    }
+    };
   </script>
+
 </body>
 </html>
