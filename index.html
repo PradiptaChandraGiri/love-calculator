@@ -1,231 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Calculator – Pradipta</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <title>Love Calculator 💖</title>
   <style>
-    :root {
-      --primary: #ff6b81;
-      --bg: #fff0f5;
-      --card-bg: rgba(255, 255, 255, 0.95);
-      --text-dark: #2d2d2d;
-    }
-
-    * {
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to right, #ffdde1, #ee9ca7);
-      min-height: 100vh;
+      color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
-      text-align: center;
+      height: 100vh;
     }
-
     h1 {
-      font-family: 'Playfair Display', serif;
-      color: var(--primary);
+      color: #d63384;
       font-size: 3rem;
-      margin-bottom: 1rem;
-      animation: fadeInDown 1s ease-out;
+      text-shadow: 1px 1px 2px #fff;
     }
-
     form {
-      background: var(--card-bg);
-      padding: 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px 30px;
       border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      width: 100%;
-      max-width: 500px;
-      animation: fadeInUp 1s ease-out;
+      align-items: center;
     }
-
-    input, button {
-      padding: 0.8rem;
-      border-radius: 10px;
-      border: none;
-      font-size: 1rem;
-    }
-
     input {
-      background: #fff;
-      border: 1px solid #ddd;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 250px;
     }
-
     button {
-      background-color: var(--primary);
+      background: #d63384;
       color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      margin-top: 10px;
     }
-
     button:hover {
-      transform: scale(1.05);
+      background: #b02a6b;
     }
-
-    .result, .dashboard {
-      margin-top: 2rem;
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 16px;
-      max-width: 600px;
-      width: 100%;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .log-item {
-      padding: 0.75rem 0;
-      border-bottom: 1px solid #ddd;
-    }
-
-    footer {
-      margin-top: auto;
-      font-size: 0.9rem;
-      padding-top: 2rem;
-      color: #777;
+    #result {
+      margin-top: 20px;
+      font-size: 1.2rem;
       text-align: center;
     }
-
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
     footer a {
-      color: inherit;
-      text-decoration: underline;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      color: #000;
+      text-decoration: none;
     }
   </style>
 </head>
-
 <body>
-  <h1>💘 Love Match Calculator</h1>
-
+  <h1>💘 Love Calculator 💘</h1>
   <form id="loveForm">
-    <input type="text" id="yourName" placeholder="Your Name" required>
-    <input type="text" id="crushName" placeholder="Crush Name" required>
-    <button type="submit">Calculate Love %</button>
+    <input type="text" id="yourName" placeholder="Your Name" required />
+    <input type="text" id="crushName" placeholder="Crush Name" required />
+    <button type="submit">Calculate</button>
   </form>
-
-  <div class="result" id="resultBox" style="display:none;"></div>
-  <div class="dashboard" id="dashboardBox" style="display:none;"></div>
-
+  <div id="result"></div>
   <footer>
-    <p>
-      Made with ❤️ by 
-      <strong>
-        <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
-          Pradipta Chandra Giri
-        </a>
-      </strong><br>
-      <small>&copy; 2025 Pradipta Chandra Giri. All rights reserved.</small>
-    </p>
+    Made with ❤️ by <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">Pradipta Chandra Giri</a><br />
+    &copy; 2025 All rights reserved.
   </footer>
-
   <script>
-    const loveForm = document.getElementById('loveForm');
-    const resultBox = document.getElementById('resultBox');
-    const dashboardBox = document.getElementById('dashboardBox');
+    function calculateLove(yourName, crushName) {
+      const special =
+        yourName.toLowerCase().includes("pradipta") &&
+        crushName.toLowerCase().includes("bishnupriya");
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');
-    const dashboardName = urlParams.get('dashboard');
-
-    const loveLogs = JSON.parse(localStorage.getItem('loveLogs') || '[]');
-
-    function deterministicPercentage(name1, name2) {
-      const key = name1.trim().toLowerCase() + '-' + name2.trim().toLowerCase();
-
-      if (name1.trim().toLowerCase() === "pradipta" && name2.trim().toLowerCase().includes("bishnupriya")) {
-        return 90 + Math.floor(Math.random() * 10);
+      if (special) {
+        return {
+          percent: Math.floor(Math.random() * 10) + 90, // 90-99%
+          message:
+            "This is a special bond! You both are made for each other. Here's a virtual 💝 for Bishnupriya!",
+        };
       }
 
-      let hash = 0;
-      for (let i = 0; i < key.length; i++) {
-        hash += key.charCodeAt(i) * (i + 1);
-      }
-      return (hash % 90) + 10;
+      const hash =
+        yourName.toLowerCase().split("").reduce((a, c) => a + c.charCodeAt(0), 0) +
+        crushName.toLowerCase().split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+      const percent = (hash % 100) + 1;
+      return { percent, message: "Love Match Score calculated based on names." };
     }
 
-    loveForm.addEventListener('submit', function (e) {
+    document.getElementById("loveForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const yourName = document.getElementById('yourName').value.trim();
-      const crushName = document.getElementById('crushName').value.trim();
+      const yourName = document.getElementById("yourName").value.trim();
+      const crushName = document.getElementById("crushName").value.trim();
 
-      if (!yourName || !crushName) {
-        alert("Please enter both names!");
-        return;
-      }
+      if (!yourName || !crushName) return;
 
-      const lovePercent = deterministicPercentage(yourName, crushName);
+      const { percent, message } = calculateLove(yourName, crushName);
 
-      let message = '';
-      if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
-        message = "💖 Special connection detected! A gift is on your way, Bishnupriya 💝";
-      } else {
-        message = lovePercent > 75 ? "❤️ A strong bond!" : lovePercent > 50 ? "💗 Good match!" : "💔 Needs more love!";
-      }
+      const resultText = `${yourName} ❤️ ${crushName}<br><strong>${percent}%</strong><br>${message}`;
+      document.getElementById("result").innerHTML = resultText;
 
-      const date = new Date().toISOString().split("T")[0];
-      const entry = {
-        owner: ref || localStorage.getItem("ownerName") || yourName,
-        name1: yourName,
-        name2: crushName,
-        loveScore: lovePercent,
-        date: date
-      };
-
-      loveLogs.push(entry);
-      localStorage.setItem('loveLogs', JSON.stringify(loveLogs));
-
-      resultBox.innerHTML = `<strong>${yourName}</strong> ❤️ <strong>${crushName}</strong><br><br><h2>${lovePercent}% Love Match</h2><p>${message}</p><p style="margin-top:1rem;font-size:0.9rem;color:#999;">Saved on ${date}</p>`;
-
-      if (ref) {
-        resultBox.innerHTML += `<p style="color:gray;">✅ Love Stays On Fully On The trust.</p>`;
-      } else {
-        localStorage.setItem("ownerName", yourName);
-        const baseUrl = window.location.origin + window.location.pathname;
-        resultBox.innerHTML += `<div style='margin-top:10px;'>🔗 Share this link:<br><strong>${baseUrl}?ref=${encodeURIComponent(yourName)}</strong></div>`;
-        resultBox.innerHTML += `<div>📊 View your private dashboard:<br><strong>${baseUrl}?dashboard=${encodeURIComponent(yourName)}</strong></div>`;
-      }
-
-      resultBox.style.display = 'block';
+      const oldData = JSON.parse(localStorage.getItem("loveData") || "[]");
+      oldData.push({ yourName, crushName, percent, time: new Date().toISOString() });
+      localStorage.setItem("loveData", JSON.stringify(oldData));
     });
-
-    function showDashboard(name) {
-      const filtered = loveLogs.filter(log => log.owner === name);
-      if (filtered.length === 0) return;
-      dashboardBox.style.display = 'block';
-      dashboardBox.innerHTML = `<h3>🔒 Private Dashboard for <em>${name}</em></h3><br>`;
-      filtered.reverse().forEach(log => {
-        dashboardBox.innerHTML += `<div class="log-item">${log.date}: <strong>${log.name1}</strong> ❤️ <strong>${log.name2}</strong> = <strong>${log.loveScore}%</strong></div>`;
-      });
-    }
-
-    if (dashboardName && localStorage.getItem("ownerName") === dashboardName) {
-      showDashboard(dashboardName);
-    } else if (ref) {
-      showDashboard(ref);
-    }
   </script>
 </body>
-
 </html>
