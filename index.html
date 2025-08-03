@@ -2,114 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Calculator by Pradipta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Calculator ❤️</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(120deg, #ff9a9e, #fad0c4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      width: 90%;
-      max-width: 400px;
+      padding: 40px;
+      color: #4a1c1c;
     }
+
+    h1 {
+      font-size: 2.5em;
+      color: #b30059;
+    }
+
     input {
-      padding: 0.5rem;
-      margin: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 1rem;
-      width: 80%;
-    }
-    button {
-      padding: 0.5rem 1.5rem;
-      background: #ff5e78;
-      color: white;
+      padding: 10px;
+      width: 250px;
+      margin: 10px;
       border: none;
-      border-radius: 1rem;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 10px 25px;
+      background-color: #ff3366;
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-size: 1.1em;
       cursor: pointer;
-      margin-top: 1rem;
     }
-    .result {
-      margin-top: 1rem;
-      font-weight: bold;
+
+    #result {
+      margin-top: 25px;
+      font-size: 1.4em;
+      background: #fff0f5;
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .footer {
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      text-align: center;
+
+    footer {
+      margin-top: 60px;
+      font-size: 0.9em;
+      color: #555;
     }
-    .footer a {
-      color: #333;
+
+    a {
+      color: #b30059;
       text-decoration: none;
-      font-weight: bold;
+    }
+
+    .links {
+      margin-top: 30px;
+      font-size: 1em;
+    }
+
+    .gift {
+      font-size: 1.2em;
+      color: green;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>💖 Love Calculator 💖</h2>
-    <input type="text" id="yourName" placeholder="Your Name" />
-    <input type="text" id="crushName" placeholder="Crush's Name" />
-    <button onclick="calculateLove()">Calculate</button>
-    <div class="result" id="result"></div>
-    <div class="result" id="gift"></div>
-    <div class="result" id="shareLink"></div>
-    <div class="result" id="dashboardLink"></div>
+  <h1>❤️ Love Calculator ❤️</h1>
+
+  <input type="text" id="yourName" placeholder="Your Name" /><br />
+  <input type="text" id="crushName" placeholder="Crush's Name" /><br />
+  <button id="submit">Calculate</button>
+
+  <div id="result"></div>
+
+  <div class="links" id="shareLinks" style="display:none;">
+    <p>🔗 Share this link:<br><code id="shareLink"></code></p>
+    <p>📊 Your Dashboard:<br><code id="dashboardLink"></code></p>
   </div>
-  <div class="footer">
+
+  <footer>
     Made with ❤️ by 
     <a href="https://www.linkedin.com/in/pradipta-chandra-giri-035b88340/" target="_blank">
       Pradipta Chandra Giri
-    </a><br>
-    &copy; 2025 Pradipta. All rights reserved.
-  </div>
+    </a><br />
+    © 2025 Pradipta Chandra Giri. All rights reserved.
+  </footer>
 
   <script>
-    function calculateLove() {
-      const yourName = document.getElementById('yourName').value.trim();
-      const crushName = document.getElementById('crushName').value.trim();
-
-      if (!yourName || !crushName) {
-        alert("Please enter both names!");
-        return;
-      }
-
-      let percentage;
-      if (yourName.toLowerCase() === 'pradipta' && crushName.toLowerCase().includes('bishnupriya')) {
-        percentage = Math.floor(Math.random() * 10) + 90;
-        document.getElementById('gift').innerText = "🎁 Special Message for Bishnupriya: You are cherished deeply! 💌";
-      } else {
-        const seed = (yourName + crushName).toLowerCase();
-        let hash = 0;
-        for (let i = 0; i < seed.length; i++) {
-          hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        percentage = Math.abs(hash % 101);
-        document.getElementById('gift').innerText = "";
-      }
-
-      const timestamp = new Date().toISOString();
+    function getQueryParam(key) {
       const urlParams = new URLSearchParams(window.location.search);
-      const refName = urlParams.get("ref") || yourName.toLowerCase();
-      const data = JSON.parse(localStorage.getItem("loveResults") || "[]");
-      data.push({ yourName, crushName, percentage, refName, timestamp });
-      localStorage.setItem("loveResults", JSON.stringify(data));
-
-      document.getElementById("result").innerText = `Love Score: ${percentage}%`;
-      document.getElementById("shareLink").innerHTML = `🔗 Share this link: <br><a href="index.html?ref=${encodeURIComponent(refName)}">index.html?ref=${refName}</a>`;
-      document.getElementById("dashboardLink").innerHTML = `📊 Your Dashboard: <br><a href="dashboard.html?ref=${encodeURIComponent(refName)}">dashboard.html?ref=${refName}</a>`;
+      return urlParams.get(key);
     }
+
+    function getMessage(percentage, name, crush) {
+      const crushLower = crush.toLowerCase();
+      const nameLower = name.toLowerCase();
+
+      if (nameLower.includes("pradipta") && crushLower.includes("bishnupriya")) {
+        return "You both are made for each other ❤️! Here's a special gift for her: 💐🎁";
+      }
+
+      if (percentage >= 80) return "True Love ❤️";
+      if (percentage >= 60) return "Pretty Good 💕";
+      if (percentage >= 40) return "Could Work Out 💞";
+      if (percentage >= 20) return "Hmm, needs effort 💔";
+      return "Unlikely 😢";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const nameInput = document.getElementById("yourName");
+      const crushInput = document.getElementById("crushName");
+      const submitBtn = document.getElementById("submit");
+      const resultDiv = document.getElementById("result");
+      const ref = getQueryParam("ref");
+
+      const shareSection = document.getElementById("shareLinks");
+      const shareLink = document.getElementById("shareLink");
+      const dashboardLink = document.getElementById("dashboardLink");
+
+      if (ref) {
+        shareSection.style.display = "block";
+        const url = window.location.origin + window.location.pathname + "?ref=" + ref;
+        shareLink.textContent = url;
+        dashboardLink.textContent = window.location.origin + "/dashboard.html?ref=" + ref;
+      }
+
+      submitBtn.addEventListener("click", () => {
+        const name = nameInput.value.trim();
+        const crush = crushInput.value.trim();
+
+        if (!name || !crush) {
+          alert("Please enter both names.");
+          return;
+        }
+
+        let percentage;
+        if (name.toLowerCase().includes("pradipta") && crush.toLowerCase().includes("bishnupriya")) {
+          percentage = Math.floor(Math.random() * 10) + 90; // 90–99%
+        } else {
+          const seed = name.length + crush.length + name.charCodeAt(0) + crush.charCodeAt(0);
+          percentage = (seed * 37) % 101;
+        }
+
+        const message = getMessage(percentage, name, crush);
+        const timestamp = Date.now();
+
+        const result = { name, crush, percentage, message, timestamp, ref };
+
+        let results = JSON.parse(localStorage.getItem("loveResults") || "[]");
+        results.push(result);
+        localStorage.setItem("loveResults", JSON.stringify(results));
+
+        resultDiv.innerHTML = `<h2>${percentage}%</h2><p>${message}</p>`;
+        if (name.toLowerCase().includes("pradipta") && crush.toLowerCase().includes("bishnupriya")) {
+          resultDiv.innerHTML += `<p class="gift">🎁 Special gift sent to Bishnupriya!</p>`;
+        }
+        resultDiv.style.display = "block";
+      });
+    });
   </script>
 </body>
 </html>
