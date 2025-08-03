@@ -2,95 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Calculator 💘</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #fff0f5;
-      color: #333;
-    }
-    h1 {
-      color: #d63384;
-      text-align: center;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      font-size: 1em;
-    }
-    #result {
-      display: none;
-      margin-top: 15px;
-      background: #ffe0e9;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    #dashboardSection {
-      display: none;
-      margin-top: 30px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f8d7da;
-    }
-    #dashboardLinkContainer {
-      margin-top: 15px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crush Matcher</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>💘 Love Calculator 💘</h1>
+  <div class="container">
+    <h1>💘 Crush Compatibility Calculator</h1>
+    <form id="crushForm">
+      <input type="text" id="name1" placeholder="Your Name" required />
+      <input type="text" id="name2" placeholder="Your Crush's Name" required />
+      <button type="submit">Check Match</button>
+    </form>
+    <h2 id="result"></h2>
 
-  <label for="name1">Your Name:</label>
-  <input type="text" id="name1" placeholder="Enter your name" />
+    <div id="dashboard" class="hidden">
+      <h3>📋 Your Private Dashboard</h3>
+      <input type="text" id="filterInput" placeholder="Filter by name or date..." />
+      <table id="entryTable">
+        <thead>
+          <tr>
+            <th>Receiver</th>
+            <th>Crush</th>
+            <th>Match %</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="entryTableBody"></tbody>
+      </table>
+    </div>
 
-  <label for="name2">Crush's Name:</label>
-  <input type="text" id="name2" placeholder="Enter their name" />
-
-  <button onclick="calculateLove()">Calculate ❤️</button>
-
-  <div id="result">
-    <h3>Result:</h3>
-    <p><strong id="lovePercent"></strong></p>
-    <p id="description"></p>
+    <div id="ownerLinkSection" class="hidden">
+      <h3>🔗 Your Private Dashboard Link:</h3>
+      <input type="text" id="ownerDashboardLink" readonly />
+      <button onclick="copyDashboardLink()">Copy Link</button>
+    </div>
   </div>
-
-  <div id="dashboardLinkContainer"></div>
-
-  <div id="dashboardSection">
-    <h2>📋 Your Private Dashboard</h2>
-    <button onclick="copyPrivateLink()">Copy Dashboard Link</button><br/><br/>
-    <label>Filter by Name:</label>
-    <input type="text" id="filterName" placeholder="Search names..." />
-    <label>Filter by Date:</label>
-    <input type="date" id="filterDate" />
-
-    <table>
-      <thead>
-        <tr>
-          <th>Sender Name</th>
-          <th>Crush Name</th>
-          <th>Love %</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="historyBody">
-        <!-- Dynamic rows go here -->
-      </tbody>
-    </table>
-  </div>
-
   <script src="script.js"></script>
 </body>
 </html>
